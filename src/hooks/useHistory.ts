@@ -8,7 +8,7 @@ interface HistoryEntry {
 const MAX_HISTORY = 20
 const STORAGE_KEY = 'webtext-history'
 
-export function useHistory(content: string) {
+export function useHistory() {
   const [history, setHistory] = useState<HistoryEntry[]>(() => {
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY)
@@ -18,14 +18,14 @@ export function useHistory(content: string) {
     }
   })
 
-  const saveVersion = useCallback(() => {
+  const saveVersion = useCallback((currentContent: string) => {
     setHistory(prev => {
       // Don't save if content is same as last version
-      if (prev.length > 0 && prev[0].content === content) return prev
+      if (prev.length > 0 && prev[0].content === currentContent) return prev
 
       const newEntry: HistoryEntry = {
         timestamp: Date.now(),
-        content,
+        content: currentContent,
       }
       const updated = [newEntry, ...prev].slice(0, MAX_HISTORY)
       try {
@@ -33,12 +33,11 @@ export function useHistory(content: string) {
       } catch { /* ignore */ }
       return updated
     })
-  }, [content])
+  }, [])
 
   const restoreVersion = useCallback((versionContent: string) => {
-    // Save current state before restoring
-    saveVersion()
-  }, [saveVersion])
+    return versionContent
+  }, [])
 
   return { history, saveVersion, restoreVersion }
 }

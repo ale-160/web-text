@@ -1,4 +1,3 @@
-import React from 'react'
 
 interface HeaderProps {
   stats: { chars: number; words: number; lines: number }
@@ -26,7 +25,10 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className="header">
       <div className="header-left">
-        <a className="logo" href="/">WebText<span>.dev</span></a>
+        <a className="logo" href="https://ale160.com" target="_blank" rel="noopener noreferrer">
+          <img src="/logo-icon.ico" alt="Logo" className="logo-icon" />
+          WebText<span>.dev</span>
+        </a>
       </div>
 
       <div className="header-center">

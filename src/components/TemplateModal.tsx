@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { templates } from '../utils/templates'
 
 interface TemplateModalProps {

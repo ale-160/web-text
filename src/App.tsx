@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react'
-import MDEditor from '@uiw/react-md-editor'
+import { useState, useCallback } from 'react'
+import MDEditor, { commands } from '@uiw/react-md-editor'
 import Header from './components/Header'
 import TemplateModal from './components/TemplateModal'
 import HistoryPanel from './components/HistoryPanel'
@@ -17,15 +17,69 @@ const DEFAULT_CONTENT = `# 欢迎使用 WebText ✏️
 ## 功能特性
 
 - **实时预览** — 左侧编辑，右侧即时预览
+- **代码高亮** — 支持多种编程语言的代码高亮
 - **自动保存** — 内容自动保存到浏览器本地存储
 - **暗色模式** — 点击右上角切换明暗主题
 - **模板库** — 内置常用模板，一键套用
 - **历史版本** — 自动记录编辑历史，可随时回退
 - **导出文件** — 支持导出为 .md 文件或复制到剪贴板
 
-## 快捷操作
+## 代码高亮示例
 
-> 试试点击右上角的各个按钮吧！
+### JavaScript
+
+\`\`\`javascript
+// JavaScript 示例
+function greet(name) {
+  return \`Hello, \${name}!\`;
+}
+
+const message = greet('World');
+console.log(message);
+\`\`\`
+
+### TypeScript
+
+\`\`\`typescript
+// TypeScript 示例
+interface User {
+  id: number;
+  name: string;
+}
+
+function getUser(id: number): User {
+  return { id, name: 'John' };
+}
+\`\`\`
+
+### Python
+
+\`\`\`python
+# Python 示例
+def greet(name):
+    return f"Hello, {name}!"
+
+print(greet("World"))
+\`\`\`
+
+## 其他 Markdown 功能
+
+> 引用文本示例
+> 
+> 支持多行引用
+
+- 列表项 1
+- 列表项 2
+  - 嵌套列表项
+
+1. 有序列表
+2. 第二项
+
+**粗体** 和 *斜体* 以及 ~~删除线~~
+
+\`行内代码\`
+
+---
 
 开始编辑吧，你的内容会自动保存 👇
 `
@@ -33,16 +87,15 @@ const DEFAULT_CONTENT = `# 欢迎使用 WebText ✏️
 function App() {
   const [content, setContent] = useLocalStorage('webtext-content', DEFAULT_CONTENT)
   const { theme, toggleTheme } = useTheme()
-  const { history, saveVersion, restoreVersion } = useHistory(content)
+  const { history, saveVersion, restoreVersion } = useHistory()
   const [showTemplates, setShowTemplates] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Auto save with debounce
   useAutoSave(content, () => {
-    saveVersion()
+    saveVersion(content)
   })
 
   const stats = countStats(content)
@@ -79,10 +132,12 @@ function App() {
   }, [setContent, showToast])
 
   const handleRestoreVersion = useCallback((versionContent: string) => {
-    restoreVersion(versionContent)
+    // Save current content first
+    saveVersion(content)
+    setContent(versionContent)
     setShowHistory(false)
     showToast('已恢复到历史版本')
-  }, [restoreVersion, showToast])
+  }, [saveVersion, content, setContent, showToast])
 
   const toggleFullscreen = useCallback(() => {
     setIsFullscreen(prev => !prev)
@@ -110,6 +165,30 @@ function App() {
             preview="live"
             height="100%"
             data-color-mode={theme}
+            previewOptions={{
+              highlightEnable: true,
+              showLineNumbers: true,
+            }}
+            commands={[
+              commands.bold,
+              commands.italic,
+              commands.strikethrough,
+              commands.hr,
+              commands.title,
+              commands.divider,
+              commands.link,
+              commands.quote,
+              commands.code,
+              commands.codeBlock,
+              commands.image,
+              commands.table,
+              commands.divider,
+              commands.orderedListCommand,
+              commands.unorderedListCommand,
+              commands.checkedListCommand,
+              commands.divider,
+              commands.fullscreen,
+            ]}
           />
         </div>
       </div>
