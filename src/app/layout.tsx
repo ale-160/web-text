@@ -3,9 +3,9 @@ import "./globals.css";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "WebText · 在线 Markdown 编辑器",
+  title: "web-text · 在线 Markdown 编辑器",
   description: "简洁优雅的在线 Markdown 编辑器，支持实时预览、代码高亮、自动保存",
-  keywords: ["Markdown", "编辑器", "WebText", "在线编辑器"],
+  keywords: ["Markdown", "编辑器", "web-text", "在线编辑器"],
 };
 
 export default function RootLayout({

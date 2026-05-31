@@ -9,7 +9,7 @@
     "nextjs",
     "react"
   ],
-  "author": "WebText Team",
+  "author": "web-text Team",
   "license": "Apache-2.0",
   "scripts": {
     "dev": "next dev -p 8526",

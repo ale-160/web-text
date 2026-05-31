@@ -2,15 +2,21 @@
 
 import { useState, useEffect } from 'react';
 
+function getInitialTheme(): 'light' | 'dark' {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('webtext-theme');
+    if (saved === 'dark' || saved === 'light') {
+      return saved;
+    }
+  }
+  return 'light';
+}
+
 export function useTheme() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>(getInitialTheme);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('webtext-theme');
-    if (saved === 'dark' || saved === 'light') {
-      setTheme(saved);
-    }
     setIsMounted(true);
   }, []);
 

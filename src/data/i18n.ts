@@ -1,11 +1,11 @@
 export type Language = 'zh' | 'en';
 
 export const STRINGS_ZH = {
-  appName: 'WebText',
-  appTitle: 'WebText - 在线 Markdown 编辑器',
+  appName: 'web-text',
+  appTitle: 'web-text - 在线 Markdown 编辑器',
   appDescription: '简洁优雅的在线 Markdown 编辑器，支持实时预览、代码高亮、自动保存',
   
-  welcomeTitle: '欢迎使用 WebText',
+  welcomeTitle: '欢迎使用 web-text',
   featuresTitle: '功能特性',
   features: [
     '实时预览 - 左侧编辑，右侧即时预览',
@@ -64,7 +64,7 @@ export const STRINGS_ZH = {
   helpKeyboardShortcuts: '键盘快捷键',
   helpFeatures: '功能介绍',
   
-  helpIntro: 'WebText 是一个简洁优雅的在线 Markdown 编辑器，所有数据保存在浏览器本地，无需担心隐私问题。',
+  helpIntro: 'web-text 是一个简洁优雅的在线 Markdown 编辑器，所有数据保存在浏览器本地，无需担心隐私问题。',
   helpFeaturePreview: '实时预览：在左侧编辑，右侧会即时显示渲染效果',
   helpFeatureAutosave: '自动保存：编辑内容会自动保存到浏览器本地存储',
   helpFeatureHistory: '历史版本：自动保存最近 50 个版本，随时可以回退',
@@ -96,11 +96,11 @@ export const STRINGS_ZH = {
 };
 
 export const STRINGS_EN = {
-  appName: 'WebText',
-  appTitle: 'WebText - Online Markdown Editor',
+  appName: 'web-text',
+  appTitle: 'web-text - Online Markdown Editor',
   appDescription: 'A simple and elegant online Markdown editor with real-time preview, syntax highlighting, and auto-save',
   
-  welcomeTitle: 'Welcome to WebText',
+  welcomeTitle: 'Welcome to web-text',
   featuresTitle: 'Features',
   features: [
     'Real-time preview - Edit on the left, preview on the right',
@@ -159,7 +159,7 @@ export const STRINGS_EN = {
   helpKeyboardShortcuts: 'Keyboard Shortcuts',
   helpFeatures: 'Features',
   
-  helpIntro: 'WebText is a simple and elegant online Markdown editor. All data is saved locally in your browser, no privacy concerns.',
+  helpIntro: 'web-text is a simple and elegant online Markdown editor. All data is saved locally in your browser, no privacy concerns.',
   helpFeaturePreview: 'Real-time Preview: Edit on the left, see the rendered result on the right',
   helpFeatureAutosave: 'Auto-save: Content is automatically saved to browser local storage',
   helpFeatureHistory: 'History: Auto-saves last 50 versions, restore anytime',
