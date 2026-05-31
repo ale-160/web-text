@@ -1,24 +1,33 @@
-import { useState, useEffect, useCallback } from 'react'
+'use client';
+
+import { useState, useEffect } from 'react';
 
 export function useTheme() {
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    try {
-      const stored = window.localStorage.getItem('webtext-theme')
-      if (stored === 'dark' || stored === 'light') return stored
-    } catch { /* ignore */ }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  })
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    try {
-      window.localStorage.setItem('webtext-theme', theme)
-    } catch { /* ignore */ }
-  }, [theme])
+    const saved = localStorage.getItem('webtext-theme');
+    if (saved === 'dark' || saved === 'light') {
+      setTheme(saved);
+    }
+    setIsMounted(true);
+  }, []);
 
-  const toggleTheme = useCallback(() => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
-  }, [])
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('webtext-theme', newTheme);
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
 
-  return { theme, toggleTheme }
+  return {
+    theme,
+    toggleTheme,
+    isMounted
+  };
 }

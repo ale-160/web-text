@@ -1,27 +1,63 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import MDEditor from '@uiw/react-md-editor';
 import '@uiw/react-md-editor/markdown-editor.css';
-import { Moon, Sun, Download, Copy, FileText, History, Maximize, Minimize } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { 
+  Moon, 
+  Sun, 
+  Download, 
+  Copy, 
+  History as HistoryIcon, 
+  HelpCircle, 
+  Globe,
+  Trash2,
+  Pin,
+  PinOff,
+} from 'lucide-react';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useTheme } from '@/hooks/useTheme';
 
-const DEFAULT_CONTENT = `# 欢迎使用 WebText ✏️
+interface HistoryEntry {
+  id: string;
+  content: string;
+  timestamp: number;
+  pinned?: boolean;
+}
 
-这是一个简洁优雅的在线 Markdown 编辑器，所有数据保存在浏览器本地存储中。
+// 计算文本字节大小的辅助函数
+const getTextSize = (text: string): number => {
+  return new Blob([text]).size;
+};
 
-## 功能特性
+// 格式化大小显示
+const formatSize = (bytes: number): string => {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
 
-- **实时预览** - 左侧编辑，右侧即时预览
-- **代码高亮** - 支持多种编程语言的代码高亮
-- **自动保存** - 内容自动保存到浏览器本地存储
-- **暗色模式** - 点击右上角切换明暗主题
-- **导出文件** - 支持导出为 Markdown 文件或复制到剪贴板
+export default function EditorPage() {
+  const { t, toggleLanguage, language, isMounted: langMounted } = useLanguage();
+  const { theme, toggleTheme, isMounted: themeMounted } = useTheme();
+  const [content, setContent] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [pinnedHistory, setPinnedHistory] = useState<HistoryEntry[]>([]);
+  const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const router = useRouter();
 
-## 代码高亮示例
+  const getDefaultContent = useCallback(() => `# [${t.welcomeTitle}](https://ale160.com)
 
-### JavaScript
+## ${t.featuresTitle}
+
+${t.features.map(f => `- **${f}**`).join('\n')}
+
+## ${t.codeHighlightTitle}
+
+### ${t.javascript}
 
 \`\`\`javascript
 // JavaScript 示例
@@ -33,7 +69,7 @@ const message = greet('World');
 console.log(message);
 \`\`\`
 
-### TypeScript
+### ${t.typescript}
 
 \`\`\`typescript
 // TypeScript 示例
@@ -47,7 +83,7 @@ function getUser(id: number): User {
 }
 \`\`\`
 
-### Python
+### ${t.python}
 
 \`\`\`python
 # Python 示例
@@ -57,69 +93,60 @@ def greet(name):
 print(greet("World"))
 \`\`\`
 
-## 其他 Markdown 功能
+## ${t.otherMarkdownFeatures}
 
-> 引用文本示例
+> ${t.blockquote}
 
-- 列表项 1
-- 列表项 2
-  - 嵌套列表项
+- ${t.listItem} 1
+- ${t.listItem} 2
+  - ${t.listItem}
 
-1. 有序列表
-2. 第二项
+1. ${t.orderedList}
+2. ${t.orderedList}
 
 **粗体** 和 *斜体* 以及 ~~删除线~~
 
-\`行内代码\`
+\`${t.inlineCode}\`
 
 ---
 
-开始编辑吧，你的内容会自动保存 👇
-`;
+${t.startEditing} 👇
+`, [t]);
 
-interface HistoryEntry {
-  id: string;
-  content: string;
-  timestamp: number;
-}
-
-export default function WebTextEditor() {
-  const [content, setContent] = useState<string>(DEFAULT_CONTENT);
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('light');
-  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
-  const [showHistory, setShowHistory] = useState<boolean>(false);
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Load from localStorage
   useEffect(() => {
-    const savedContent = localStorage.getItem('webtext-content');
-    const savedTheme = localStorage.getItem('webtext-theme');
-    const savedHistory = localStorage.getItem('webtext-history');
-    
-    if (savedContent) {
-      setContent(savedContent);
+    if (langMounted && themeMounted) {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+      
+      const savedContent = localStorage.getItem('webtext-content');
+      const savedHistory = localStorage.getItem('webtext-history');
+      const savedPinned = localStorage.getItem('webtext-pinned');
+      
+      if (savedContent) {
+        setContent(savedContent);
+      } else {
+        setContent(getDefaultContent());
+      }
+      
+      if (savedHistory) {
+        try {
+          setHistory(JSON.parse(savedHistory));
+        } catch {
+          setHistory([]);
+        }
+      }
+      
+      if (savedPinned) {
+        try {
+          setPinnedHistory(JSON.parse(savedPinned));
+        } catch {
+          setPinnedHistory([]);
+        }
+      }
     }
-    
-    if (savedTheme) {
-      setTheme(savedTheme as 'light' | 'dark' | 'system');
-    }
-    
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
-    }
-    
-    // Apply dark mode
-    if (savedTheme === 'dark' || 
-        (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, []);
+  }, [langMounted, themeMounted, getDefaultContent, language]);
 
-  // Auto save to localStorage with history
   const saveToHistory = useCallback((newContent: string) => {
     setContent(newContent);
     localStorage.setItem('webtext-content', newContent);
@@ -131,7 +158,9 @@ export default function WebTextEditor() {
     };
     
     setHistory(prev => {
-      const updated = [newHistoryEntry, ...prev.slice(0, 49)]; // Keep last 50
+      // 先过滤已有的重复（避免与固定版本重复）
+      const filtered = prev.filter(item => item.content !== newContent);
+      const updated = [newHistoryEntry, ...filtered].slice(0, 50); // 保持最近 50 个版本
       localStorage.setItem('webtext-history', JSON.stringify(updated));
       return updated;
     });
@@ -139,29 +168,30 @@ export default function WebTextEditor() {
 
   const handleContentChange = useCallback((newContent: string | undefined) => {
     const value = newContent || '';
+    setContent(value); // 立即更新状态，不等待
     
-    // Clear previous timer
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
     }
     
-    // Auto save after 1 second debounce
+    // 延迟保存，减少 localStorage 写入频率
     saveTimerRef.current = setTimeout(() => {
-      saveToHistory(value);
-    }, 1000);
-  }, [saveToHistory]);
-
-  const toggleTheme = useCallback(() => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('webtext-theme', newTheme);
-    
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
+      localStorage.setItem('webtext-content', value);
+      
+      const newHistoryEntry: HistoryEntry = {
+        id: Date.now().toString(),
+        content: value,
+        timestamp: Date.now(),
+      };
+      
+      setHistory(prev => {
+        const filtered = prev.filter(item => item.content !== value);
+        const updated = [newHistoryEntry, ...filtered].slice(0, 50);
+        localStorage.setItem('webtext-history', JSON.stringify(updated));
+        return updated;
+      });
+    }, 2000);
+  }, []);
 
   const handleExport = useCallback(() => {
     const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
@@ -171,131 +201,290 @@ export default function WebTextEditor() {
     a.download = `webtext-${new Date().toISOString().slice(0, 10)}.md`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('文件已导出');
-  }, [content]);
+    toast.success(t.exported);
+  }, [content, t.exported]);
 
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(content);
-      toast.success('已复制到剪贴板');
+      toast.success(t.copied);
     } catch {
-      toast.error('复制失败');
+      toast.error(t.copyFailed);
     }
-  }, [content]);
+  }, [content, t.copied, t.copyFailed]);
 
   const handleRestoreVersion = useCallback((version: HistoryEntry) => {
     setContent(version.content);
     setShowHistory(false);
-    toast.success('已恢复到历史版本');
+    toast.success(t.restored);
+  }, [t.restored]);
+
+  const handleTogglePin = useCallback((version: HistoryEntry) => {
+    if (version.pinned) {
+      // 取消固定
+      setPinnedHistory(prev => {
+        const updated = prev.filter(item => item.id !== version.id);
+        localStorage.setItem('webtext-pinned', JSON.stringify(updated));
+        return updated;
+      });
+      setHistory(prev => {
+        const updated = prev.map(item => 
+          item.id === version.id ? { ...item, pinned: false } : item
+        );
+        localStorage.setItem('webtext-history', JSON.stringify(updated));
+        return updated;
+      });
+    } else {
+      // 固定
+      const pinnedItem = { ...version, pinned: true };
+      setPinnedHistory(prev => {
+        const updated = [pinnedItem, ...prev.filter(item => item.id !== version.id)];
+        localStorage.setItem('webtext-pinned', JSON.stringify(updated));
+        return updated;
+      });
+      setHistory(prev => {
+        const updated = prev.map(item => 
+          item.id === version.id ? pinnedItem : item
+        );
+        localStorage.setItem('webtext-history', JSON.stringify(updated));
+        return updated;
+      });
+    }
   }, []);
 
-  const formatTime = (timestamp: number): string => {
+  const handleDeleteVersion = useCallback((versionId: string) => {
+    setHistory(prev => {
+      const updated = prev.filter(item => item.id !== versionId);
+      localStorage.setItem('webtext-history', JSON.stringify(updated));
+      return updated;
+    });
+    setPinnedHistory(prev => {
+      const updated = prev.filter(item => item.id !== versionId);
+      localStorage.setItem('webtext-pinned', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const handleToggleLanguageWithToast = useCallback(() => {
+    toggleLanguage();
+    toast.success(t.languageSwitched);
+  }, [toggleLanguage, t.languageSwitched]);
+
+  const formatTime = useCallback((timestamp: number): string => {
     const date = new Date(timestamp);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     
-    if (diff < 60000) return '刚刚';
-    if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`;
-    if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`;
-    return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-  };
+    if (diff < 60000) return t.justNow;
+    if (diff < 3600000) return `${Math.floor(diff / 60000)} ${t.minutesAgo}`;
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)} ${t.hoursAgo}`;
+    return date.toLocaleDateString(language === 'zh' ? 'zh-CN' : 'en-US');
+  }, [t.justNow, t.minutesAgo, t.hoursAgo, language]);
+
+  // 计算存储使用情况
+  const storageInfo = useMemo(() => {
+    const contentSize = getTextSize(content);
+    const historySize = history.reduce((acc, item) => acc + getTextSize(item.content), 0);
+    const pinnedSize = pinnedHistory.reduce((acc, item) => acc + getTextSize(item.content), 0);
+    return {
+      totalSize: contentSize + historySize + pinnedSize,
+      contentSize,
+      historySize,
+      pinnedSize,
+    };
+  }, [content, history, pinnedHistory]);
+
+  if (!langMounted || !themeMounted) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
-      {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <a href="https://ale160.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img src="/logo-icon.ico" alt="Logo" className="w-8 h-8 rounded" />
-            <span className="text-xl font-bold text-primary">WebText</span>
+            <span className="text-xl font-bold text-primary">{t.appName}</span>
           </a>
         </div>
 
         <div className="flex items-center gap-2">
           <button
+            onClick={() => router.push('/help')}
+            className="p-2 rounded-lg hover:bg-muted transition-colors"
+            title={t.help}
+          >
+            <HelpCircle className="w-5 h-5" />
+          </button>
+          <button
             onClick={() => setShowHistory(true)}
             className="p-2 rounded-lg hover:bg-muted transition-colors"
-            title="历史版本"
+            title={t.history}
           >
-            <History className="w-5 h-5" />
+            <HistoryIcon className="w-5 h-5" />
           </button>
           <button
             onClick={handleCopy}
             className="p-2 rounded-lg hover:bg-muted transition-colors"
-            title="复制"
+            title={t.copy}
           >
             <Copy className="w-5 h-5" />
           </button>
           <button
             onClick={handleExport}
             className="p-2 rounded-lg hover:bg-muted transition-colors"
-            title="导出"
+            title={t.export}
           >
             <Download className="w-5 h-5" />
           </button>
           <button
-            onClick={toggleTheme}
+            onClick={handleToggleLanguageWithToast}
             className="p-2 rounded-lg hover:bg-muted transition-colors"
-            title="切换主题"
+            title={t.language}
           >
-            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            <Globe className="w-5 h-5" />
           </button>
           <button
-            onClick={() => setIsFullscreen(!isFullscreen)}
+            onClick={toggleTheme}
             className="p-2 rounded-lg hover:bg-muted transition-colors"
-            title="全屏"
+            title={t.theme}
           >
-            {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
         </div>
       </header>
 
-      {/* Editor */}
-      <div className={cn(
-        "flex-1 transition-all duration-300",
-        isFullscreen ? "h-screen fixed inset-0 z-50" : "p-4"
-      )}>
-        <div className="h-full">
-          <MDEditor
-            value={content}
-            onChange={handleContentChange}
-            preview="live"
-            height="100%"
-            data-color-mode={theme}
-            previewOptions={{
-              highlightEnable: true,
-              showLineNumbers: true,
-            }}
-          />
-        </div>
+      <div className="flex-1">
+        <MDEditor
+          value={content}
+          onChange={handleContentChange}
+          preview="live"
+          height="100%"
+          data-color-mode={theme}
+          commands={[]}
+        />
       </div>
 
-      {/* History Panel */}
       {showHistory && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-card rounded-xl shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden">
+          <div className="bg-card rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b border-border">
-              <h3 className="font-semibold">历史版本</h3>
+              <h3 className="font-semibold">{t.historyPanelTitle}</h3>
               <button onClick={() => setShowHistory(false)} className="p-2 rounded hover:bg-muted">
                 ✕
               </button>
             </div>
+            
+            {/* 存储使用情况 */}
+            <div className="p-4 border-b border-border bg-muted/30">
+              <h4 className="text-sm font-medium mb-2">{t.storageUsage}</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                <div className="bg-muted p-2 rounded">
+                  <span className="text-muted-foreground">{t.totalSize}:</span>
+                  <span className="ml-1 font-mono">{formatSize(storageInfo.totalSize)}</span>
+                </div>
+                <div className="bg-muted p-2 rounded">
+                  <span className="text-muted-foreground">{t.contentSize}:</span>
+                  <span className="ml-1 font-mono">{formatSize(storageInfo.contentSize)}</span>
+                </div>
+                <div className="bg-muted p-2 rounded">
+                  <span className="text-muted-foreground">{t.historySize}:</span>
+                  <span className="ml-1 font-mono">{formatSize(storageInfo.historySize)}</span>
+                </div>
+                <div className="bg-muted p-2 rounded">
+                  <span className="text-muted-foreground">{t.pinnedSize}:</span>
+                  <span className="ml-1 font-mono">{formatSize(storageInfo.pinnedSize)}</span>
+                </div>
+              </div>
+            </div>
+            
             <div className="overflow-y-auto max-h-[60vh]">
-              {history.length === 0 ? (
+              {history.length === 0 && pinnedHistory.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground">
-                  暂无历史记录
+                  {t.noHistory}
                 </div>
               ) : (
-                history.map((version) => (
-                  <div
-                    key={version.id}
-                    className="p-3 hover:bg-muted cursor-pointer transition-colors"
-                    onClick={() => handleRestoreVersion(version)}
-                  >
-                    <div className="text-sm text-muted-foreground">{formatTime(version.timestamp)}</div>
-                    <div className="mt-1 text-sm truncate">{version.content.slice(0, 100)}</div>
-                  </div>
-                ))
+                <div className="space-y-0">
+                  {/* 固定版本 */}
+                  {pinnedHistory.length > 0 && (
+                    <>
+                      <div className="px-4 py-2 bg-muted/30 text-xs font-medium text-muted-foreground sticky top-0">
+                        {t.pinned} ({pinnedHistory.length})
+                      </div>
+                      {pinnedHistory.map(version => (
+                        <div
+                          key={version.id}
+                          className="p-3 hover:bg-muted cursor-pointer transition-colors border-b border-border last:border-b-0"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1" onClick={() => handleRestoreVersion(version)}>
+                              <div className="text-sm text-muted-foreground">{formatTime(version.timestamp)}</div>
+                              <div className="mt-1 text-sm truncate">{version.content.slice(0, 80)}</div>
+                            </div>
+                            <div className="flex gap-1 ml-2">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleTogglePin(version); }}
+                                className="p-1.5 rounded hover:bg-muted/70"
+                                title={t.unpin}
+                              >
+                                <PinOff className="w-4 h-4 text-yellow-600" />
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleDeleteVersion(version.id); }}
+                                className="p-1.5 rounded hover:bg-muted/70"
+                                title={t.delete}
+                              >
+                                <Trash2 className="w-4 h-4 text-red-500" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                  
+                  {/* 普通版本 */}
+                  {history.length > 0 && (
+                    <>
+                      <div className="px-4 py-2 bg-muted/20 text-xs font-medium text-muted-foreground sticky top-0">
+                        {t.history} ({history.length})
+                      </div>
+                      {history.filter(item => !item.pinned).map(version => (
+                        <div
+                          key={version.id}
+                          className="p-3 hover:bg-muted cursor-pointer transition-colors border-b border-border last:border-b-0"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1" onClick={() => handleRestoreVersion(version)}>
+                              <div className="text-sm text-muted-foreground">{formatTime(version.timestamp)}</div>
+                              <div className="mt-1 text-sm truncate">{version.content.slice(0, 80)}</div>
+                            </div>
+                            <div className="flex gap-1 ml-2">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleTogglePin(version); }}
+                                className="p-1.5 rounded hover:bg-muted/70"
+                                title={t.pin}
+                              >
+                                <Pin className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleDeleteVersion(version.id); }}
+                                className="p-1.5 rounded hover:bg-muted/70"
+                                title={t.delete}
+                              >
+                                <Trash2 className="w-4 h-4 text-red-500" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
               )}
             </div>
           </div>

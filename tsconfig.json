@@ -9,7 +9,6 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-    "noE": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
