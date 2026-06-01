@@ -219,14 +219,14 @@ export default function EditorPage() {
         </div>
       </header>
 
-      <div className="flex-1">
+      <div className="flex-1 min-h-0" data-color-mode={theme}>
         <MDEditor
           value={content}
           onChange={handleContentChange}
           preview="live"
           height="100%"
-          data-color-mode={theme}
           commands={[]}
+          style={{ height: '100%', minHeight: '100%' }}
         />
       </div>
 
