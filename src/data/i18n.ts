@@ -190,7 +190,7 @@ export const STRINGS_EN = {
   back: 'Back',
 };
 
-export function getStrings(lang: Language = 'zh') {
+export function getStrings(lang: Language = 'en') {
   return lang === 'en' ? STRINGS_EN : STRINGS_ZH;
 }
 

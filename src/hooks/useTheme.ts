@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from 'react';
 
+// 保持与 storage.ts 一致的 key
+const THEME_KEY = 'web-text-theme';
+
 function getInitialTheme(): 'light' | 'dark' {
   if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('webtext-theme');
+    const saved = localStorage.getItem(THEME_KEY);
     if (saved === 'dark' || saved === 'light') {
       return saved;
     }
@@ -23,7 +26,7 @@ export function useTheme() {
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
-    localStorage.setItem('webtext-theme', newTheme);
+    localStorage.setItem(THEME_KEY, newTheme);
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {

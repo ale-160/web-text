@@ -17,11 +17,11 @@ export interface StorageInfo {
 }
 
 const STORAGE_KEYS = {
-  CONTENT: 'webtext-content',
-  HISTORY: 'webtext-history',
-  PINNED: 'webtext-pinned',
-  LANGUAGE: 'webtext-language',
-  THEME: 'webtext-theme',
+  CONTENT: 'web-text-content',
+  HISTORY: 'web-text-history',
+  PINNED: 'web-text-pinned',
+  LANGUAGE: 'web-text-language',
+  THEME: 'web-text-theme',
 };
 
 // 获取字符串字节大小

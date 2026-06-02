@@ -11,6 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { HistoryModal } from '@/components/ui/HistoryModal';
 import { getDefaultContent } from '@/data/defaultContent';
 import { getStrings } from '@/data/i18n';
+import { getStructuredData } from '@/config/structuredData';
 import {
   loadContent,
   saveContent,
@@ -30,6 +31,9 @@ export default function EditorPage() {
   const [pinned, setPinned] = useState<HistoryEntry[]>([]);
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
+  
+  // 获取结构化数据
+  const structuredDataList = getStructuredData(language);
 
   useEffect(() => {
     if (langMounted && themeMounted) {
@@ -164,14 +168,24 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
-      <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="flex items-center gap-3">
-          <a href="https://ale160.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="https://ale160.com/images/logo-icon.ico" alt="Logo" className="w-8 h-8 rounded" />
-            <span className="text-xl font-bold text-primary">{t.appName}</span>
-          </a>
-        </div>
+    <>
+      {/* 结构化数据 */}
+      {structuredDataList.map((data, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+        />
+      ))}
+      
+      <div className="flex flex-col h-screen bg-background text-foreground">
+        <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-card/50 backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <a href="https://ale160.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <img src="https://ale160.com/images/logo-icon.ico" alt="Logo" className="w-8 h-8 rounded" />
+              <span className="text-xl font-bold text-primary">{t.appName}</span>
+            </a>
+          </div>
 
         <div className="flex items-center gap-2">
           <button
@@ -240,6 +254,7 @@ export default function EditorPage() {
         onDelete={handleDeleteVersion}
         onTogglePin={handleTogglePin}
       />
-    </div>
+      </div>
+    </>
   );
 }
