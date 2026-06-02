@@ -168,7 +168,7 @@ export default function EditorPage() {
       <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <a href="https://ale160.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="/logo-icon.ico" alt="Logo" className="w-8 h-8 rounded" />
+            <img src="https://ale160.com/images/logo-icon.ico" alt="Logo" className="w-8 h-8 rounded" />
             <span className="text-xl font-bold text-primary">{t.appName}</span>
           </a>
         </div>
