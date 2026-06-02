@@ -25,14 +25,13 @@ export default function HelpPage() {
       await navigator.clipboard.writeText(text);
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
-    } catch (err) {
-      console.error('Copy failed:', err);
+    } catch {
+      console.error('Copy failed');
     }
   }, []);
 
   return (
     <div className={`min-h-screen ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* 顶部导航 */}
       <header className={`border-b ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'} px-6 py-4`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -47,13 +46,26 @@ export default function HelpPage() {
             </button>
             <h1 className="text-2xl font-bold">{t.helpTitle}</h1>
           </div>
+          <a
+            href="https://ale160.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`text-sm flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              isDark 
+                ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            }`}
+          >
+            {t.poweredBy}
+            <span className="text-primary font-semibold">
+              {language === 'zh' ? '阿乐一百六' : 'ale160'}
+            </span>
+          </a>
         </div>
       </header>
 
-      {/* 主内容区 */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* 左侧：示例列表 */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold mb-4">
               {language === 'zh' ? '语法示例' : 'Syntax Examples'}
@@ -70,7 +82,6 @@ export default function HelpPage() {
                       : 'border-gray-200 hover:border-gray-300 hover:bg-gray-100 bg-white'
                 }`}
               >
-                {/* 标题和标签 */}
                 <div className="mb-2">
                   <h3 className="text-lg font-semibold">{example.title}</h3>
                   <div className="flex flex-wrap gap-2 mt-1">
@@ -87,7 +98,6 @@ export default function HelpPage() {
                   </div>
                 </div>
 
-                {/* 描述 */}
                 <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                   {example.description}
                 </p>
@@ -95,7 +105,6 @@ export default function HelpPage() {
             ))}
           </div>
 
-          {/* 右侧：预览区 */}
           <div className="lg:sticky lg:top-8 h-fit">
             <div className={`border rounded-lg p-4 ${
               isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
@@ -185,6 +194,24 @@ export default function HelpPage() {
           </div>
         </div>
       </main>
+
+      <footer className={`border-t ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'} px-6 py-4`}>
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+            {t.poweredBy}
+          </p>
+          <a
+            href="https://ale160.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`text-sm font-semibold hover:underline transition-colors ${
+              isDark ? 'text-primary hover:text-blue-400' : 'text-primary hover:text-blue-600'
+            }`}
+          >
+            {language === 'zh' ? '阿乐一百六' : 'ale160'}
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }

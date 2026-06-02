@@ -15,7 +15,7 @@ ${S.features.map(f => `- **${f}**`).join('\n')}
 ### ${S.javascript}
 
 \`\`\`javascript
-// JavaScript 示例
+// ${S.javascriptExample}
 function greet(name) {
   return \`Hello, \${name}!\`;
 }
@@ -27,7 +27,7 @@ console.log(message);
 ### ${S.typescript}
 
 \`\`\`typescript
-// TypeScript 示例
+// ${S.typescriptExample}
 interface User {
   id: number;
   name: string;
@@ -41,7 +41,7 @@ function getUser(id: number): User {
 ### ${S.python}
 
 \`\`\`python
-# Python 示例
+# ${S.pythonExample}
 def greet(name):
     return f"Hello, {name}!"
 
@@ -59,7 +59,7 @@ print(greet("World"))
 1. ${S.orderedList}
 2. ${S.orderedList}
 
-**粗体** 和 *斜体* 以及 ~~删除线~~
+**${S.bold}** ${S.and} *${S.italic}* ${S.asWellAs} ~~${S.strikethrough}~~
 
 \`${S.inlineCode}\`
 
