@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Moon, Sun, Download, Copy, History, HelpCircle, Globe } from 'lucide-react';
+import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { HistoryModal } from '@/components/ui/HistoryModal';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
+import { MarkdownPreview } from '@/components/MarkdownPreview';
 import { getDefaultContent } from '@/data/defaultContent';
 import { getStrings } from '@/data/i18n';
 import {
@@ -20,6 +21,8 @@ import {
   HistoryEntry
 } from '@/utils/storage';
 
+type ViewMode = 'edit' | 'split' | 'preview';
+
 export default function EditorPage() {
   const { t, toggleLanguage, language, isMounted: langMounted } = useLanguage();
   const { theme, toggleTheme, isMounted: themeMounted } = useTheme();
@@ -27,6 +30,7 @@ export default function EditorPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [pinned, setPinned] = useState<HistoryEntry[]>([]);
+  const [viewMode, setViewMode] = useState<ViewMode>('split');
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
@@ -51,25 +55,24 @@ export default function EditorPage() {
     }
   }, [langMounted, themeMounted, t, language, theme]);
 
-  const handleContentChange = useCallback((newContent: string | undefined) => {
-    const value = newContent || '';
-    setContent(value);
+  const handleContentChange = useCallback((newContent: string) => {
+    setContent(newContent);
 
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
     }
 
     saveTimerRef.current = setTimeout(() => {
-      saveContent(value);
+      saveContent(newContent);
 
       const newHistoryEntry: HistoryEntry = {
         id: Date.now().toString(),
-        content: value,
+        content: newContent,
         timestamp: Date.now(),
       };
 
       setHistory(prev => {
-        const filtered = prev.filter(item => item.content !== value);
+        const filtered = prev.filter(item => item.content !== newContent);
         const updated = [newHistoryEntry, ...filtered].slice(0, 50);
         saveHistory(updated);
         return updated;
@@ -154,6 +157,37 @@ export default function EditorPage() {
     toast.success(newT.languageSwitched);
   }, [toggleLanguage]);
 
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const handleToggleFullscreen = useCallback(async () => {
+    if (!document.fullscreenElement) {
+      try {
+        await document.documentElement.requestFullscreen();
+      } catch (err) {
+        console.error('Error attempting to enable fullscreen:', err);
+      }
+    } else {
+      if (document.exitFullscreen) {
+        try {
+          await document.exitFullscreen();
+        } catch (err) {
+          console.error('Error attempting to exit fullscreen:', err);
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   if (!langMounted || !themeMounted) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
@@ -164,15 +198,69 @@ export default function EditorPage() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
-      <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="flex items-center gap-4">
+      <header className="flex items-center px-6 py-4 border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="flex items-center gap-4 w-1/3">
           <a href="https://ale160.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img src="https://ale160.com/images/logo-icon.ico" alt="Logo" className="w-8 h-8 rounded" />
             <span className="text-2xl font-bold text-primary">{t.appName}</span>
           </a>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center w-1/3">
+          <div className="flex items-center gap-1 border border-border rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('edit')}
+              className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                viewMode === 'edit'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+              title={t.editMode}
+            >
+              <Edit className="w-4 h-4" />
+              <span className="text-sm font-medium hidden sm:inline">{t.editMode}</span>
+            </button>
+            <button
+              onClick={() => setViewMode('split')}
+              className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                viewMode === 'split'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+              title={t.splitMode}
+            >
+              <Split className="w-4 h-4" />
+              <span className="text-sm font-medium hidden sm:inline">{t.splitMode}</span>
+            </button>
+            <button
+              onClick={() => setViewMode('preview')}
+              className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                viewMode === 'preview'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+              title={t.previewMode}
+            >
+              <Eye className="w-4 h-4" />
+              <span className="text-sm font-medium hidden sm:inline">{t.previewMode}</span>
+            </button>
+            <div className="w-px h-6 bg-border mx-1" />
+            <button
+              onClick={handleToggleFullscreen}
+              className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                viewMode === 'edit' || viewMode === 'split' || viewMode === 'preview'
+                  ? 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  : ''
+              }`}
+              title={t.fullscreen}
+            >
+              {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+              <span className="text-sm font-medium hidden sm:inline">{t.fullscreen}</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 w-1/3">
           <button
             onClick={() => router.push('/help')}
             className="p-2 rounded-lg hover:bg-muted transition-colors"
@@ -218,12 +306,39 @@ export default function EditorPage() {
         </div>
       </header>
 
-      <div className="flex-1 min-h-0">
-        <MarkdownEditor
-          value={content}
-          onChange={handleContentChange}
-          theme={theme}
-        />
+      <div className="flex-1 min-h-0 overflow-hidden">
+        {viewMode === 'edit' && (
+          <MarkdownEditor
+            value={content}
+            onChange={handleContentChange}
+            theme={theme}
+          />
+        )}
+
+        {viewMode === 'preview' && (
+          <MarkdownPreview
+            content={content}
+            theme={theme}
+          />
+        )}
+
+        {viewMode === 'split' && (
+          <div className="flex h-full">
+            <div className="flex-1 min-w-0 border-r border-border">
+              <MarkdownEditor
+                value={content}
+                onChange={handleContentChange}
+                theme={theme}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <MarkdownPreview
+                content={content}
+                theme={theme}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <HistoryModal

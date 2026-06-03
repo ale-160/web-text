@@ -28,16 +28,16 @@ export const getMarkdownExamples = (lang: Language): MarkdownExample[] => [
     description: lang === 'zh' ? '使用 * 或 _ 进行斜体，** 或 __ 进行粗体' : 'Use * or _ for italics, ** or __ for bold',
     markdown: lang === 'zh'
       ? '**粗体文字**\n*斜体文字*\n***粗斜体文字***\n~~删除线文字~~'
-      : '**Bold text**\n*Italic text*\n***Bold-italic text***\n~~Strikethrough text~~',
+      : '**Bold text**\n*Italic text***\n***Bold-italic text***\n~~Strikethrough text~~',
     tags: [lang === 'zh' ? '基础' : 'Basic']
   },
   {
     id: 'paragraphs',
-    title: lang === 'zh' ? '段落 (Paragraphs)' : 'Paragraphs',
-    description: lang === 'zh' ? '使用空行分隔段落，使用两个空格+回车换行' : 'Separate paragraphs with blank lines, use two spaces+enter for line breaks',
+    title: lang === 'zh' ? '段落和换行 (Paragraphs and Line Breaks)' : 'Paragraphs and Line Breaks',
+    description: lang === 'zh' ? '使用空行分隔段落，单个回车会被合并为空格，双空格+回车可强制换行' : 'Separate paragraphs with blank lines, single enter is merged as space, two spaces+enter for line break',
     markdown: lang === 'zh'
-      ? '这是第一个段落。\n\n这是第二个段落。\n\n这是一个有换行的段落，  \n第二行。'
-      : 'This is the first paragraph.\n\nThis is the second paragraph.\n\nThis is a paragraph with line breaks,  \nSecond line.',
+      ? '这是第一个段落。\n\n这是第二个段落。\n\n这是一个有换行的段落：\n这行没有换行。  \n这行换行了（双空格+回车）。'
+      : 'This is the first paragraph.\n\nThis is the second paragraph.\n\nThis is a paragraph with line breaks:\nThis line doesn\'t break.  \nThis line breaks (two spaces+enter).',
     tags: [lang === 'zh' ? '基础' : 'Basic']
   },
   {
@@ -79,19 +79,19 @@ export const getMarkdownExamples = (lang: Language): MarkdownExample[] => [
   {
     id: 'links',
     title: lang === 'zh' ? '链接 (Links)' : 'Links',
-    description: lang === 'zh' ? '创建普通链接和带标题的链接' : 'Create regular links and links with titles',
+    description: lang === 'zh' ? '创建链接，可选择添加标题，悬停时显示' : 'Create links, optional title shows on hover',
     markdown: lang === 'zh'
-      ? '[普通链接](https://ale160.com)\n[带标题的链接](https://ale160.com "访问 ale160.com")'
-      : '[Regular link](https://ale160.com)\n[Link with title](https://ale160.com "Visit ale160.com")',
+      ? '[普通链接](https://ale160.com)\n[带标题的链接](https://ale160.com "访问 ale160.com") - 悬停查看标题'
+      : '[Regular link](https://ale160.com)\n[Link with title](https://ale160.com "Visit ale160.com") - hover to see title',
     tags: [lang === 'zh' ? '基础' : 'Basic']
   },
   {
     id: 'images',
     title: lang === 'zh' ? '图片 (Images)' : 'Images',
-    description: lang === 'zh' ? '插入图片，与链接类似但加 ! 前缀' : 'Insert images, similar to links but with ! prefix',
+    description: lang === 'zh' ? '插入图片，与链接类似但加 ! 前缀，可添加替代文本和标题' : 'Insert images, like links with ! prefix, add alt text and optional title',
     markdown: lang === 'zh'
-      ? '![ale160 Logo](https://ale160.com/favicon.ico)\n![带标题的图片](https://ale160.com/favicon.ico "ale160 logo")'
-      : '![ale160 Logo](https://ale160.com/favicon.ico)\n![Image with title](https://ale160.com/favicon.ico "ale160 logo")',
+      ? '![ale160 Logo](https://ale160.com/favicon.ico)\n![带标题的图片](https://ale160.com/favicon.ico "ale160 logo") - 悬停查看标题'
+      : '![ale160 Logo](https://ale160.com/favicon.ico)\n![Image with title](https://ale160.com/favicon.ico "ale160 logo") - hover to see title',
     tags: [lang === 'zh' ? '多媒体' : 'Media']
   },
   {

@@ -102,6 +102,11 @@ export const STRINGS_ZH = {
   helpMarkdownTables: '表格',
   helpMarkdownEscaping: '转义字符',
   
+  editMode: '编辑',
+  splitMode: '分屏',
+  previewMode: '预览',
+  fullscreen: '全屏',
+  
   back: '返回',
 };
 
@@ -206,6 +211,11 @@ export const STRINGS_EN = {
   helpMarkdownImages: 'Images',
   helpMarkdownTables: 'Tables',
   helpMarkdownEscaping: 'Escaping Characters',
+  
+  editMode: 'Edit',
+  splitMode: 'Split',
+  previewMode: 'Preview',
+  fullscreen: 'Fullscreen',
   
   back: 'Back',
 };
