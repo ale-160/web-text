@@ -2,7 +2,7 @@
 
 import { useLanguage } from '@/hooks/useLanguage';
 import { HistoryEntry, getStorageInfo, formatSize } from '@/utils/storage';
-import { Pin, PinOff, Trash2 } from 'lucide-react';
+import { Pin, PinOff, Trash2, Edit3 } from 'lucide-react';
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -13,6 +13,7 @@ interface HistoryModalProps {
   onRestore: (version: HistoryEntry) => void;
   onDelete: (versionId: string) => void;
   onTogglePin: (version: HistoryEntry) => void;
+  onRename: (version: HistoryEntry) => void;
 }
 
 export const HistoryModal = ({
@@ -24,6 +25,7 @@ export const HistoryModal = ({
   onRestore,
   onDelete,
   onTogglePin,
+  onRename,
 }: HistoryModalProps) => {
   const { t, language } = useLanguage();
 
@@ -102,6 +104,9 @@ export const HistoryModal = ({
                           onClick={() => onRestore(version)}
                         >
                           <div className="text-sm text-muted-foreground">{formatTime(version.timestamp)}</div>
+                          {version.name && (
+                            <div className="text-sm font-medium truncate">{version.name}</div>
+                          )}
                           <div className="mt-1 text-sm truncate">{version.content.slice(0, 50) + (version.content.length > 50 ? '...' : '')}</div>
                         </div>
                         <div className="flex gap-1 ml-2">
@@ -114,6 +119,16 @@ export const HistoryModal = ({
                             title={t.unpin}
                           >
                             <PinOff className="w-4 h-4 text-yellow-600" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onRename(version);
+                            }}
+                            className="p-1.5 rounded hover:bg-muted/70"
+                            title={t.rename}
+                          >
+                            <Edit3 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={(e) => {
@@ -149,6 +164,9 @@ export const HistoryModal = ({
                           onClick={() => onRestore(version)}
                         >
                           <div className="text-sm text-muted-foreground">{formatTime(version.timestamp)}</div>
+                          {version.name && (
+                            <div className="text-sm font-medium truncate">{version.name}</div>
+                          )}
                           <div className="mt-1 text-sm truncate">{version.content.slice(0, 50) + (version.content.length > 50 ? '...' : '')}</div>
                         </div>
                         <div className="flex gap-1 ml-2">
@@ -161,6 +179,16 @@ export const HistoryModal = ({
                             title={t.pin}
                           >
                             <Pin className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onRename(version);
+                            }}
+                            className="p-1.5 rounded hover:bg-muted/70"
+                            title={t.rename}
+                          >
+                            <Edit3 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={(e) => {

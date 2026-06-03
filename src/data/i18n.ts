@@ -106,6 +106,12 @@ export const STRINGS_ZH = {
   splitMode: '分屏',
   previewMode: '预览',
   fullscreen: '全屏',
+  rename: '重命名',
+  name: '名称',
+  cancel: '取消',
+  save: '保存',
+  exportFile: '导出文件',
+  fileName: '文件名',
   
   back: '返回',
 };
@@ -216,6 +222,12 @@ export const STRINGS_EN = {
   splitMode: 'Split',
   previewMode: 'Preview',
   fullscreen: 'Fullscreen',
+  rename: 'Rename',
+  name: 'Name',
+  cancel: 'Cancel',
+  save: 'Save',
+  exportFile: 'Export File',
+  fileName: 'File Name',
   
   back: 'Back',
 };

@@ -3,10 +3,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize } from 'lucide-react';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { HistoryModal } from '@/components/ui/HistoryModal';
+import { ExportModal } from '@/components/ui/ExportModal';
+import { RenameModal } from '@/components/ui/RenameModal';
+import { HelpModal } from '@/components/ui/HelpModal';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownPreview } from '@/components/MarkdownPreview';
 import { getDefaultContent } from '@/data/defaultContent';
@@ -18,7 +20,8 @@ import {
   saveHistory,
   loadPinned,
   savePinned,
-  HistoryEntry
+  HistoryEntry,
+  renameHistoryEntry
 } from '@/utils/storage';
 
 type ViewMode = 'edit' | 'split' | 'preview';
@@ -28,11 +31,14 @@ export default function EditorPage() {
   const { theme, toggleTheme, isMounted: themeMounted } = useTheme();
   const [content, setContent] = useState('');
   const [showHistory, setShowHistory] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+  const [showRename, setShowRename] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [pinned, setPinned] = useState<HistoryEntry[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('split');
+  const [currentRenameVersion, setCurrentRenameVersion] = useState<HistoryEntry | null>(null);
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     if (langMounted && themeMounted) {
@@ -81,15 +87,39 @@ export default function EditorPage() {
   }, []);
 
   const handleExport = useCallback(() => {
+    setShowExport(true);
+  }, []);
+
+  const doExport = useCallback((fileName: string) => {
     const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `web-text-${new Date().toISOString().slice(0, 10)}.md`;
+    a.download = fileName.endsWith('.md') ? fileName : `${fileName}.md`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success(t.exported);
   }, [content, t.exported]);
+
+  const handleRename = useCallback((version: HistoryEntry) => {
+    setCurrentRenameVersion(version);
+    setShowRename(true);
+  }, []);
+
+  const doRename = useCallback((newName: string) => {
+    if (currentRenameVersion) {
+      const { history: updatedHistory, pinned: updatedPinned } = renameHistoryEntry(
+        currentRenameVersion.id,
+        newName,
+        history,
+        pinned
+      );
+      setHistory(updatedHistory);
+      setPinned(updatedPinned);
+      saveHistory(updatedHistory);
+      savePinned(updatedPinned);
+    }
+  }, [currentRenameVersion, history, pinned]);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -204,6 +234,13 @@ export default function EditorPage() {
             <img src="https://ale160.com/images/logo-icon.ico" alt="Logo" className="w-8 h-8 rounded" />
             <span className="text-2xl font-bold text-primary">{t.appName}</span>
           </a>
+          <button
+            onClick={() => setShowHelp(true)}
+            className="p-2 rounded-lg hover:bg-muted transition-colors"
+            title={t.help}
+          >
+            <HelpCircle className="w-5 h-5" />
+          </button>
         </div>
 
         <div className="flex items-center justify-center w-1/3">
@@ -261,13 +298,6 @@ export default function EditorPage() {
         </div>
 
         <div className="flex items-center justify-end gap-2 w-1/3">
-          <button
-            onClick={() => router.push('/help')}
-            className="p-2 rounded-lg hover:bg-muted transition-colors"
-            title={t.help}
-          >
-            <HelpCircle className="w-5 h-5" />
-          </button>
           <button
             onClick={() => setShowHistory(true)}
             className="p-2 rounded-lg hover:bg-muted transition-colors"
@@ -350,6 +380,23 @@ export default function EditorPage() {
         onRestore={handleRestoreVersion}
         onDelete={handleDeleteVersion}
         onTogglePin={handleTogglePin}
+        onRename={handleRename}
+      />
+      <ExportModal
+        isOpen={showExport}
+        onClose={() => setShowExport(false)}
+        defaultName={`web-text-${new Date().toISOString().slice(0, 10)}`}
+        onExport={doExport}
+      />
+      <RenameModal
+        isOpen={showRename}
+        onClose={() => setShowRename(false)}
+        currentName={currentRenameVersion?.name}
+        onRename={doRename}
+      />
+      <HelpModal
+        isOpen={showHelp}
+        onClose={() => setShowHelp(false)}
       />
     </div>
   );

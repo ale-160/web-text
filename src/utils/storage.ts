@@ -7,6 +7,7 @@ export interface HistoryEntry {
   content: string;
   timestamp: number;
   pinned?: boolean;
+  name?: string;
 }
 
 export interface StorageInfo {
@@ -84,4 +85,17 @@ export const getStorageInfo = (content: string, history: HistoryEntry[], pinned:
     historySize,
     pinnedSize,
   };
+};
+
+// 重命名历史记录
+export const renameHistoryEntry = (entryId: string, newName: string, history: HistoryEntry[], pinned: HistoryEntry[]): { history: HistoryEntry[], pinned: HistoryEntry[] } => {
+  const updatedHistory = history.map(item => 
+    item.id === entryId ? { ...item, name: newName } : item
+  );
+  
+  const updatedPinned = pinned.map(item => 
+    item.id === entryId ? { ...item, name: newName } : item
+  );
+  
+  return { history: updatedHistory, pinned: updatedPinned };
 };
