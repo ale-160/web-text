@@ -1,14 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import MDEditor from '@uiw/react-md-editor';
-import '@uiw/react-md-editor/markdown-editor.css';
 import { Moon, Sun, Download, Copy, History, HelpCircle, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { HistoryModal } from '@/components/ui/HistoryModal';
+import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { getDefaultContent } from '@/data/defaultContent';
 import { getStrings } from '@/data/i18n';
 import {
@@ -219,14 +218,11 @@ export default function EditorPage() {
         </div>
       </header>
 
-      <div className="flex-1 min-h-0" data-color-mode={theme}>
-        <MDEditor
+      <div className="flex-1 min-h-0">
+        <MarkdownEditor
           value={content}
           onChange={handleContentChange}
-          preview="live"
-          height="100%"
-          commands={[]}
-          style={{ height: '100%', minHeight: '100%' }}
+          theme={theme}
         />
       </div>
 

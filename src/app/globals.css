@@ -129,37 +129,23 @@
   }
 }
 
-/* Markdown Editor Styles */
-.w-md-editor {
-  --color-fg-default: var(--foreground) !important;
-  --color-canvas-default: var(--background) !important;
-  --color-border-default: var(--border) !important;
+/* CodeMirror Editor Styles */
+.cm-editor {
   height: 100% !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-lg) !important;
+  border: none !important;
 }
 
-.w-md-editor-text-pre,
-.w-md-editor-text-input,
-.w-md-editor-text {
+.cm-content {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
   font-size: 15px !important;
   line-height: 1.7 !important;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-}
-
-.w-md-editor-text-input {
-  caret-color: var(--foreground) !important;
-}
-
-/* Fix cursor position mismatch */
-.w-md-editor-text-input,
-.w-md-editor-text-pre {
-  tab-size: 2 !important;
-  -moz-tab-size: 2 !important;
   padding: 16px !important;
 }
 
-/* Ensure consistent font rendering */
-.w-md-editor-content {
-  font-variant-ligatures: none !important;
+.cm-gutters {
+  display: none !important;
+}
+
+.cm-scroller {
+  overflow: auto !important;
 }
