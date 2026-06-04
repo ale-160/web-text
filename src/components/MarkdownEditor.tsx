@@ -4,9 +4,8 @@ import React, { useCallback } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
-import { EditorView, keymap } from '@codemirror/view';
+import { EditorView } from '@codemirror/view';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { Prec } from '@codemirror/state';
 
 interface MarkdownEditorProps {
   value: string;
@@ -19,55 +18,12 @@ export function MarkdownEditor({ value, onChange, theme }: MarkdownEditorProps) 
     onChange(val);
   }, [onChange]);
 
-  // 检测当前光标是否在表格内
-  const isInTable = useCallback((content: string, cursorPos: number): boolean => {
-    const lines = content.substring(0, cursorPos).split('\n');
-    let inTable = false;
-
-    for (let i = lines.length - 1; i >= 0; i--) {
-      const line = lines[i].trim();
-      if (line.includes('|')) {
-        inTable = true;
-        break;
-      }
-      // 如果遇到空行或非表格行，且前面没有表格，则停止
-      if (!inTable && line !== '') {
-        break;
-      }
-    }
-    return inTable;
-  }, []);
-
-  const insertBr = useCallback((view: EditorView) => {
-    const state = view.state;
-    const doc = state.doc.toString();
-    const cursorPos = state.selection.main.head;
-
-    if (isInTable(doc, cursorPos)) {
-      // 在表格内，插入 <br/> 标签
-      view.dispatch({
-        changes: { from: cursorPos, to: cursorPos, insert: '<br/>' },
-        selection: { anchor: cursorPos + 5 }
-      });
-      return true;
-    }
-
-    // 不在表格内，使用默认行为（换行）
-    return false;
-  }, [isInTable]);
-
   const extensions = [
     markdown({
       base: markdownLanguage,
       codeLanguages: languages
     }),
-    EditorView.lineWrapping,
-    Prec.high(keymap.of([
-      {
-        key: 'Enter',
-        run: insertBr
-      }
-    ]))
+    EditorView.lineWrapping
   ];
 
   return (
