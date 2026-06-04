@@ -4,6 +4,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeRaw from 'rehype-raw';
 import 'highlight.js/styles/github-dark.css';
 import 'highlight.js/styles/github.css';
 
@@ -191,7 +192,7 @@ export function MarkdownPreview({ content, theme }: MarkdownPreviewProps) {
         `}</style>
         <ReactMarkdown 
           remarkPlugins={[remarkGfm]} 
-          rehypePlugins={[rehypeHighlight]}
+          rehypePlugins={[rehypeRaw, rehypeHighlight]}
         >
           {content}
         </ReactMarkdown>
