@@ -86,13 +86,16 @@ All English characters and symbols input via direct keyboard (not through IME co
 Using **Microsoft Pinyin**:
 
 1. Switch to Chinese input mode
-2. Press the period key (。) — **nothing appears** in the editor
-3. Press the comma key (,) — the **comma (，)** appears, but the previously typed period (。) is still missing
-4. Press the period key again — the **period (。)** now appears
+2. Press the period key twice — only the second **period (。)** appears
+3. Or: press period once (nothing appears), then press comma — the **comma (，)** appears, but the previous period is still missing
 
-In other words: each punctuation mark requires two attempts. The first attempt is silently discarded; the second attempt commits the character. This applies to all Chinese punctuation: 。，：；！？""''【】、《》（）
 
-**Note:** The two inputs do not need to be the same symbol. For example, if the first input is a comma (，) and the second is a period (。), the period will be successfully committed. Conversely, if the first input is a period (。) and the second is a comma (，), the comma will succeed. The second IME composition always succeeds regardless of whether it matches the first. (Tested at https://web-text.ale160.com/)
+You need to press the Chinese punctuation mark twice ，《》。、？；：“”｛｝|·！￥……&（）—— etc.
+Other known issues include:
+ - 【 or ‘ It will move the input cursor to the left
+ - 】 or ’ It will move the input cursor to the right
+
+**Note:** The two inputs do not need to be the same symbol. For example, if the first input is a comma (，) and the second is a period (。), the period will be successfully committed. Conversely, if the first input is a period (。) and the second is a comma (，), the comma will succeed. The second IME composition always succeeds regardless of whether it matches the first. (See reproduction steps in 6.1 or 6.2)
 
 ### 3.3 Symptom B: QQ Pinyin — All IME Input Requires Double Input
 
@@ -168,81 +171,39 @@ This means the previously hypothesized event sequence (compositionstart → befo
 
 We verified that CodeMirror 6's `EditContext` API is **only enabled on Android** (`browser.android` check in `@codemirror/view@6.43.0`). Desktop Chrome uses the traditional `contenteditable` + `compositionstart/compositionend` event model. Therefore, this is not related to the previously reported Chromium Bug #351029417 (EditContext IME character bounds issue).
 
-### 5.5 CodeMirror's Own compositionend Handling
-
-In `@codemirror/view@6.43.0`, the `compositionend` handler for non-Android desktop browsers:
-
-```javascript
-observers.compositionend = view => {
-    if (view.observer.editContext) return;
-    view.inputState.composing = -1;
-    view.inputState.compositionEndedAt = Date.now();
-    view.inputState.compositionPendingKey = true;
-    view.inputState.compositionPendingChange = view.observer.pendingRecords().length > 0;
-    view.inputState.compositionFirstChange = null;
-    if (browser.chrome && browser.android) {
-        view.observer.flushSoon(); // Android only
-    } else if (view.inputState.compositionPendingChange) {
-        Promise.resolve().then(() => view.observer.flush());
-    } else {
-        setTimeout(() => {
-            if (view.inputState.composing < 0 && view.docView.hasComposition)
-                view.update([]);
-        }, 50);
-    }
-};
-```
-
-For desktop Chrome, the code falls into the `else` branch, using a 50ms `setTimeout` to clear the composition view. However, since the first IME composition produces **no events at all**, this handler is never invoked for the first input, and the issue cannot be mitigated at the CodeMirror level.
-
 ## 6. Steps to Reproduce
 
 ### 6.1 Minimal Reproduction Setup
 
-Any CodeMirror 6 editor instance in Chrome on Windows will reproduce this. For a concrete example:
+ For a concrete example:
 
-1. Open https://web-text.ale160.com/ (our test environment) in Google Chrome (149+) on Windows
+1. Open the live demo at https://web-text.ale160.com/ or run locally – [repository](https://github.com/ale-160/web-text.git)
 2. Click into the editor to focus it
 3. Switch to a Chinese IME (Microsoft Pinyin or QQ Pinyin)
 4. Try typing a Chinese period (。) — observe it does not appear
 5. Type another character — observe the second character appears but the first is lost
 
-### 6.2 Our Specific Reproduction Environment
+### 6.2 Detailed Reproduction Steps
 
-Our project is a Next.js 16 + React 19 web application with a Markdown editor built on:
-
-```
-@codemirror/view@6.43.0
-@codemirror/state@6.5.2
-@codemirror/lang-markdown@6.3.2
-```
-
-We tested with both `@uiw/react-codemirror@4.25.10` (React wrapper) and direct CodeMirror 6 `EditorView` API — the bug persists in both cases.
-
-### 6.3 Detailed Reproduction Steps
+1. Open the live demo at https://web-text.ale160.com/ (or run locally) in Chrome on Windows
+2. Click the editor to focus
 
 **Scenario 1: Chinese Punctuation (Microsoft Pinyin)**
 
-1. Open https://web-text.ale160.com/ (our test environment) in Chrome on Windows
-2. Switch to edit mode
-3. Click the editor to focus
-4. Switch input method to Microsoft Pinyin (微软拼音)
-5. Press the `.` key (period) — expect `。` to appear
-6. **Actual**: Nothing appears. The first input is silently lost.
-7. Press the `,` key (comma) — expect `，` to appear
-8. **Actual**: `，` appears, confirming the second input succeeds
+1. Switch input method to Microsoft Pinyin
+2. Press the `.` key (period) — expect `。` to appear
+3. **Actual**: Nothing appears. The first input is silently lost.
+4. Press the `,` key (comma) — expect `，` to appear
+5. **Actual**: `，` appears, confirming the second input succeeds
 
 **Scenario 2: Chinese Characters (QQ Pinyin)**
 
-1. Open https://web-text.ale160.com/ (our test environment) in Chrome on Windows
-2. Switch to edit mode
-3. Click the editor to focus
-4. Switch input method to QQ Pinyin (QQ拼音)
-5. Type `nihao` on the keyboard
-6. Select "你好" from the candidate popup
-7. **Actual**: Nothing appears in the editor. The first composition is lost.
-8. Type `nihao` again and select "你好"
-9. **Actual**: "你好" appears, confirming the second composition succeeds
+1. Switch input method to QQ Pinyin
+2. Type `nihao` on the keyboard
+3. Select "你好" from the candidate popup
+4. **Actual**: Nothing appears. The first composition is lost.
+5. Type `nihao` again and select "你好"
+6. **Actual**: "你好" appears, confirming the second composition succeeds
 
 ## 7. Our Debugging and Fix Attempt History
 
@@ -321,6 +282,9 @@ The only viable workarounds are:
 ## 12. References
 
 - **Test application**: https://web-text.ale160.com/
+- **Source code & self‑hosting**: https://github.com/ale-160/web-text (see README.md for local setup)
 - **洛谷公告 (Luogu announcement — Chinese community confirmation)**: https://www.luogu.com.cn/discuss/1303381
 - **CodeMirror forum discussion (high community attention)**: https://discuss.codemirror.net/t/chinese-ime-punctuation-input-loses-every-other-keypress-requires-2-presses-per-character/9741
 - **W3C official mailing list (root cause: Chrome error)**: https://lists.w3.org/Archives/Public/public-webapps-github/2025Apr/0087.html
+
+For more precise details, see the Chinese version of this report (https://github.com/ale-160/web-text/blob/master/docs/CHROME_IME_BUG_REPORT.md).
