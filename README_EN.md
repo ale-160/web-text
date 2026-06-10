@@ -58,7 +58,7 @@ On Windows desktop, Chromium 149.0.7827.103 and above (including Google Chrome a
 - If using Chrome or Edge, **do not upgrade your browser** (browsers auto-check for updates; consider disabling auto-update)
 - Switch to Firefox or Quark Browser for Chinese input
 
-Bug report. See `docs/CHROME_IME_BUG_REPORT_EN.md` for details.
+Bug report. See `docs/CHROME_IME_BUG_REPORT-EN.md` for details.
 
 ## License
 
