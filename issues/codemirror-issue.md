@@ -6,7 +6,7 @@
 
 恳请 CodeMirror 团队帮忙验证此问题，如果确认问题存在，帮忙向 Chromium 团队反馈。我们注意到 CodeMirror 团队（特别是维护者）过去曾直接向 Chromium 报告过 IME 相关 Bug（如 #351029417），在 Chromium 开发者中有良好的沟通渠道。
 
-**English version (completed with the assistance of translation tools)：** https://github.com/ale-160/web-text/blob/main/issues/codemirror-issue-en.md
+**English version (completed with the assistance of translation tools)：** https://github.com/ale-160/web-text/blob/master/issues/codemirror-issue-en.md
 **详细技术分析报告：** https://github.com/ale-160/web-text/blob/master/docs/CHROME_IME_BUG_REPORT.md
 
 ---

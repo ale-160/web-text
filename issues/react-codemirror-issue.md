@@ -8,7 +8,7 @@
 
 我们恳请 @uiw/react-codemirror 团队帮忙验证此问题。同时，我们也已向 CodeMirror 官方提交了 Issue，请求他们帮忙验证并向 Chromium 团队反馈。如果此问题被证实，建议你们可以发个公告或 Pin 住此 Issue，方便遇到同样问题的用户查阅。我们的验证过程中也提供了替代性解决方案，例如使用某些版本之前的浏览器或换用其他浏览器。
 
-**English version (completed with the assistance of translation tools)：** https://github.com/ale-160/web-text/blob/main/issues/react-codemirror-issue-en.md
+**English version (completed with the assistance of translation tools)：** https://github.com/ale-160/web-text/blob/master/issues/react-codemirror-issue-en.md
 **详细技术分析报告（中文）：** https://github.com/ale-160/web-text/blob/master/docs/CHROME_IME_BUG_REPORT.md
 
 ---

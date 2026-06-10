@@ -6,7 +6,7 @@ Our team is based in China and does not have access to a Google account to file 
 
 We would be grateful if the CodeMirror team could help verify this issue and, if confirmed, escalate it to the Chromium team. We noticed the CodeMirror team (particularly the maintainer) has directly reported IME-related bugs to Chromium in the past (e.g., #351029417), and has good communication channels with Chromium developers.
 
-**Chinese Version (中文版本):** https://github.com/ale-160/web-text/blob/main/issues/codemirror-issue.md
+**Chinese Version (中文版本):** https://github.com/ale-160/web-text/blob/master/issues/codemirror-issue.md
 **Detailed technical analysis report (drafted with translation tools):** https://github.com/ale-160/web-text/blob/master/docs/CHROME_IME_BUG_REPORT_EN.md
 
 ---
