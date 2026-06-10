@@ -58,7 +58,7 @@ npm run dev
 - 使用 Chrome 或 Edge 的用户，**请勿升级浏览器版本**（浏览器会自动检查更新，建议关闭自动更新）
 - 可切换到 Firefox 或夸克浏览器进行中文输入
 
-Bug 报告，详见 `docs/CHROME_IME_BUG_REPORT_CN.md`。
+Bug 报告，详见 `docs/CHROME_IME_BUG_REPORT.md`。
 
 ## 开源协议
 
