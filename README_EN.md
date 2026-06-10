@@ -1,6 +1,6 @@
 # web-text
 
-[English](README_EN.md) | [中文](README.md)
+English | [中文](README.md)
 
 A simple and elegant online Markdown editor. All data is saved locally in your browser, no privacy concerns.
 
@@ -58,7 +58,7 @@ On Windows desktop, Chromium 149.0.7827.103 and above (including Google Chrome a
 - If using Chrome or Edge, **do not upgrade your browser** (browsers auto-check for updates; consider disabling auto-update)
 - Switch to Firefox or Quark Browser for Chinese input
 
-We have submitted a detailed bug report to the Chromium team. See `docs/CHROME_IME_BUG_REPORT.md` for details.
+Bug report. See `docs/CHROME_IME_BUG_REPORT.md` for details.
 
 ## License
 
@@ -66,4 +66,4 @@ Apache License 2.0
 
 ## About
 
-Developed and maintained by [ale160](http://ale160.com/).
+Developed and maintained by [ale-160](http://ale160.com/).

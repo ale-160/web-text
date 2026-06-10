@@ -1,9 +1,9 @@
 # Chrome Bug Report: Chinese IME Composition Input Lost on First Attempt in contenteditable
 
-**Reporter:** Web-text project team
-**Date:** 2026-06-10
-**Affected Component:** Google Chrome desktop IME composition event dispatch on Windows
-**Severity:** High — breaks Chinese/Japanese/Korean input for contenteditable-based editors
+**Reporter:** Web-text project team  
+**Date:** 2026-06-10  
+**Affected Component:** Google Chrome desktop IME composition event dispatch on Windows  
+**Severity:** High — breaks Chinese/Japanese/Korean input for contenteditable-based editors  
 **Scope:** Affects Chromium 149.0.7827.103+ on Windows desktop (including Google Chrome and Microsoft Edge) — other browsers and older Chromium versions are unaffected
 
 ---

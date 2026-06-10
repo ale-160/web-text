@@ -1,6 +1,6 @@
 # web-text
 
-[English](README_EN.md) | [中文](README.md)
+[English](README_EN.md) | 中文
 
 一个简洁优雅的在线 Markdown 编辑器，所有数据保存在浏览器本地，无需担心隐私问题。
 
@@ -58,7 +58,7 @@ npm run dev
 - 使用 Chrome 或 Edge 的用户，**请勿升级浏览器版本**（浏览器会自动检查更新，建议关闭自动更新）
 - 可切换到 Firefox 或夸克浏览器进行中文输入
 
-我们已向 Chromium 团队提交详细的 Bug 报告，详见 `docs/CHROME_IME_BUG_REPORT_CN.md`。
+Bug 报告，详见 `docs/CHROME_IME_BUG_REPORT_CN.md`。
 
 ## 开源协议
 
@@ -66,4 +66,4 @@ Apache License 2.0
 
 ## 关于
 
-由 [ale160](http://ale160.com/) 开发维护。
+由 [ale-160](http://ale160.com/) 开发维护。

@@ -1,9 +1,9 @@
 # Bug 报告：Chromium 149+ Windows 中文输入法首次输入丢失
 
-**报告人：** Web-text 项目组
-**日期：** 2026-06-10
-**影响组件：** Chromium 引擎 Windows 桌面端 IME 合成事件派发
-**严重程度：** 高 — 导致所有基于 contenteditable 的编辑器中文/日文/韩文输入异常
+**报告人：** Web-text 项目组  
+**日期：** 2026-06-10  
+**影响组件：** Chromium 引擎 Windows 桌面端 IME 合成事件派发  
+**严重程度：** 高 — 导致所有基于 contenteditable 的编辑器中文/日文/韩文输入异常  
 **影响范围：** Chromium 149.0.7827.103 及以上版本的 Windows 桌面端（包括 Google Chrome 和 Microsoft Edge），其他浏览器及旧版 Chromium 不受影响
 
 ---
@@ -85,7 +85,7 @@ JavaScript        V8 14.4.258.18
 
 也就是说：每个标点符号都需要按两次。第一次输入被静默丢弃，第二次才能成功写入。这适用于所有中文标点：。，：；！？""''【】、《》（）
 
-**注意：** 两次输入不需要是同一个符号。例如第一次输入逗号（，），第二次输入句号（。），句号会成功写入。反过来也一样。第二次 IME 合成总是能成功，无论是否与第一次相同。（测试地址：https://web-text.ale160.com/）
+**注意：** 两次输入不需要是同一个符号。例如第一次输入逗号（，），第二次输入句号（。），句号会成功写入。反过来也一样。第二次 IME 合成总是能成功，无论是否与第一次相同。（测试地址：https://web-text.ale160.com/ ）
 
 ### 3.3 症状 B：QQ 拼音——所有输入都需要两次
 
@@ -177,7 +177,7 @@ document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:'
 
 任何 Chrome 中的 CodeMirror 6 编辑器实例都可以复现此问题。具体步骤：
 
-1. 在 Windows 上用 Google Chrome（149+）打开 https://web-text.ale160.com/（我们的测试环境）
+1. 在 Windows 上用 Google Chrome（149+）打开 https://web-text.ale160.com/ （我们的测试环境）
 2. 点击编辑器聚焦
 3. 切换到中文输入法（微软拼音或 QQ 拼音）
 4. 尝试输入中文句号（。）——观察它不会出现
@@ -187,7 +187,7 @@ document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:'
 
 **场景 1：中文标点（微软拼音）**
 
-1. 在 Windows 上用 Chrome 打开 https://web-text.ale160.com/（我们的测试环境）
+1. 在 Windows 上用 Chrome 打开 https://web-text.ale160.com/ （我们的测试环境）
 2. 切换到编辑模式
 3. 点击编辑器聚焦
 4. 切换输入法为微软拼音
@@ -198,7 +198,7 @@ document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:'
 
 **场景 2：中文汉字（QQ 拼音）**
 
-1. 在 Windows 上用 Chrome 打开 https://web-text.ale160.com/（我们的测试环境）
+1. 在 Windows 上用 Chrome 打开 https://web-text.ale160.com/ （我们的测试环境）
 2. 切换到编辑模式
 3. 点击编辑器聚焦
 4. 切换输入法为 QQ 拼音
@@ -280,7 +280,7 @@ document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:'
 
 1. **建议用户切换到其他浏览器**（Firefox、夸克）进行中文输入，或使用旧版 Chromium（149.0.7827.103 之前）。
 2. **关注 CodeMirror Issue Tracker**，等待编辑器库层面的 Chromium 专项修复或绕过方案。
-3. **向 Chromium 提交 Bug 报告**（https://bugs.chromium.org/），引起 Chromium 团队的关注。
+3. **向 Chromium 提交 Bug 报告**（ https://bugs.chromium.org/ ） ，引起 Chromium 团队的关注。
 
 ## 12. 参考资料
 
