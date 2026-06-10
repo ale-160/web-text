@@ -84,8 +84,8 @@ JavaScript        V8 14.4.258.18
 
 需要按两次中文标点，《》。、？；：“”｛｝|·！￥……&（）——等
 其他已知问题：
- - 【 或 ‘ 会左移动输入光标
- - 】或 ’ 会右移动输入光标
+  - 【 或 ‘ 会左移动输入光标
+  - 】或 ’ 会右移动输入光标
 
 **注意：** 两次输入不需要是同一个符号。例如第一次输入逗号（，），第二次输入句号（。），句号会成功写入。反过来也一样。第二次 IME 合成总是能成功，无论是否与第一次相同。（复现步骤见6.1或6.2）
 
@@ -121,9 +121,8 @@ JavaScript        V8 14.4.258.18
 
 **关键结论：**
 
-1. Bug **不是 Chromium 引擎的通用问题**——使用旧版 Chromium 的浏览器不受影响。
-2. **Microsoft Edge 从 Chromium 149.0.7827.54 升级到 149.0.7827.103 后出现 Bug**，证明这是 Chromium 149.0.7827.103（或 .54 到 .103 之间）引入的回归。
-3. Bug 在 **Chromium 引擎的 IME 集成层**，而非 Chrome 自身代码。Google Chrome 只是最先发布了受影响的 Chromium 版本。
+1. Bug 更可能位于 **Chromium 引擎层面的 IME 集成逻辑**，而非 Google Chrome 特有代码。当前测试中，使用旧版 Chromium 的浏览器未观察到相同现象。
+2. **Microsoft Edge 从 Chromium 149.0.7827.54 升级到 149.0.7827.103 后出现 相同现象**，表明问题很可能是在 Chromium 149.0.7827.54 至 149.0.7827.103 之间引入的回归。
 
 ## 5. 技术分析
 
@@ -144,13 +143,13 @@ const view = new EditorView({
 
 **结果：Bug 在 Chrome 中依然存在。** 这确认了问题不在 React 包装层或值同步机制，而在 Chrome 自身的 IME 事件处理中。
 
-### 5.2 核心发现：首次 IME 合成没有任何事件派发
+### 5.2 核心发现：首次异常输入时未观察到任何 IME 相关事件
 
-最关键的观察：当第一次 IME 合成输入丢失时，**没有任何事件被派发**——没有 `compositionstart`，没有 `beforeinput`，没有 `input`，没有 `compositionend`。Chrome 在浏览器层面静默丢弃了第一次 IME 合成。IME 文本由操作系统提交，但从未到达网页的事件系统。
+无论是编辑器内部监听器还是外部监听器，均未接收到compositionstart、beforeinput、input、compositionend等事件。
 
-第二次输入尝试时，所有事件正常触发（`compositionstart`、`beforeinput`、`input`、`compositionend`），文本成功写入。
+这表明 Chromium 可能抑制了首次 IME 合成事件，或者未能正确派发相关事件，第二次输入时，相关事件均能够正常触发。。
 
-这意味着之前假设的事件序列（compositionstart → beforeinput → compositionend → beforeinput(insertText)）对第一次输入**完全不适用**——因为第一次输入**根本没有事件触发**。这不是事件时序的竞态条件，而是对第一次 IME 合成事件序列的**完全抑制**。
+具体根因仍需要 Chromium 团队进一步确认。
 
 **验证方法：** 在 Chrome DevTools Console 中执行以下代码，然后尝试输入中文标点：
 
@@ -177,9 +176,12 @@ document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:'
 
 ### 6.1 最简复现方式
 
-任何 Chrome 中的 CodeMirror 6 编辑器实例都可以复现此问题。具体步骤：
 
-1. 在 Windows 上用 Google Chrome（149+）[在线测试]( https://web-text.ale160.com/ )或本地部署（[GitHub地址](https://github.com/ale-160/web-text)）
+复现此问题具体步骤：
+
+1. 在 Windows 上用 Google Chrome（149+）
+  >- 在线演示：https://web-text.ale160.com/
+  >- 复现项目源码：https://github.com/ale-160/web-text
 2. 点击编辑器聚焦
 3. 切换到中文输入法（微软拼音或 QQ 拼音）
 4. 尝试输入中文句号（。）——观察它不会出现
@@ -237,8 +239,17 @@ document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:'
 ### 第 9 轮：Edge 升级回归测试
 将 Microsoft Edge 从 Chromium 149.0.7827.54 升级到 149.0.7827.103。**结果：** Edge 从不受影响变为受影响，确认这是 Chromium 引擎在 149.0.7827.54 到 149.0.7827.103 之间引入的回归。
 
-## 8. 相关 Issue
+## 8. 社区独立确认和相关 Issue
+### 8.1 社区独立确认
+该问题已在多个社区被独立报告或讨论：
 
+- 洛谷社区
+- CodeMirror 官方论坛
+- W3C 邮件列表
+
+这些独立报告表明，该问题并非单一用户环境导致，且已被不同社区用户重复观察到。。
+
+### 8.2 可能相关Issue
 | 编号 | 标题 | 状态 | 关联性 |
 |------|------|------|--------|
 | Chromium #351029417 | EditContext 下 IME 候选框位置错误 | 已修复（2024年9月） | 同属 IME + contenteditable 领域，但症状不同。本案未使用 EditContext。 |
@@ -256,15 +267,15 @@ document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:'
 
 ## 10. 影响评估
 
-此 Bug 影响**所有基于 CodeMirror 6 构建的网页编辑器**（以及可能的其他基于 contenteditable 的编辑器）在 Chromium 149.0.7827.103+ 的 Windows 桌面端使用中文/日文/韩文输入法时的正常使用。考虑到：
+此 Bug 目前观察到该问题会**影响基于 CodeMirror 6 的编辑器**（以及可能的其他基于 contenteditable 的编辑器）在 Chromium 149.0.7827.103+ 的 Windows 桌面端使用中文/日文/韩文输入法时的正常使用。考虑到：
 
 - Chrome 全球浏览器市场份额约 65%
-- 中国用户是 Chrome 最大的用户群体（9 亿+）
 - CodeMirror 6 被数千个 Web 应用使用（文档站点、笔记应用、IDE、CMS 系统等）
-- 此 Bug 导致基本的中文文本输入完全不可用
+- 此 Bug 导致基本的中文字符/部分输入法中文的输入不可用
+- 此 Bug 会显著影响中文输入体验，并导致部分输入内容丢失
 - 回归已蔓延到 Microsoft Edge
 
-这是一个对大量 Chromium 浏览器用户而言**严重的关键可用性回归**。
+对于依赖 IME 输入的 CodeMirror 用户而言这属于**较为严重的可用性回归问题**。
 
 ## 11. 临时解决方案
 
