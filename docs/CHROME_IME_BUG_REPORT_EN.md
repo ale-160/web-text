@@ -1,20 +1,20 @@
-# Chrome Bug Report: Chinese IME Composition Input Lost on First Attempt in contenteditable
+# Bug Report: First IME Composition Input Lost in Chromium 149+ on Windows
 
-**Reporter:** Web-text project team  
-**Date:** 2026-06-10  
-**Affected Component:** Google Chrome desktop IME composition event dispatch on Windows  
-**Severity:** High — breaks Chinese/Japanese/Korean input for contenteditable-based editors  
-**Scope:** Affects Chromium 149.0.7827.103+ on Windows desktop (including Google Chrome and Microsoft Edge) — other browsers and older Chromium versions are unaffected
+**Reporter:** Web-text project team
+**Date:** 2026-06-10
+**Affected Component:** Chromium engine Windows desktop IME composition event dispatch
+**Severity:** High — causes abnormal Chinese/Japanese/Korean input in contenteditable-based editors
+**Scope:** Chromium 149.0.7827.103+ on Windows desktop (including Google Chrome and Microsoft Edge); other browsers and older Chromium versions are unaffected
 
 ---
 
 ## 1. Summary
 
-In Google Chrome (149+) on Windows, the first IME (Input Method Editor) composition input is silently lost when typing into a `contenteditable` element managed by CodeMirror 6. The user must type the same input a second time for it to be committed to the editor. This affects Chinese punctuation for Microsoft Pinyin, and both punctuation and full Chinese character input for other IMEs like QQ Pinyin, impacting hundreds of millions of Chinese users globally.
+In Google Chrome (149+) on Windows desktop, when using an IME (Input Method Editor) to input content into a `contenteditable` element, **the first composition input is silently discarded**. The user must input the same content a second time for it to be successfully committed to the editor. With Microsoft Pinyin, Chinese punctuation (period, comma, colon, etc.) requires two presses per character; with QQ Pinyin, all Chinese input (both characters and punctuation) requires two attempts.
 
-**This is a Chromium engine regression.** We have confirmed through systematic cross-browser testing that Firefox, Quark Browser, and Electron (v39.2.7) built-in browser are unaffected. Notably, Microsoft Edge was also unaffected until it updated to Chromium 149.0.7827.103, after which it exhibited the same bug — confirming the root cause is in Chromium 149.0.7827.103+.
+**This is a Chromium engine regression.** We confirmed through systematic cross-browser testing that Firefox, Quark Browser, and Electron (v39.2.7) built-in browser are unaffected. Notably, Microsoft Edge was also unaffected until it was upgraded to Chromium 149.0.7827.103, after which it exhibited the same bug — confirming the root cause lies in code changes introduced in Chromium 149.0.7827.103+.
 
-We also confirmed this is **not** a React or `@uiw/react-codemirror` issue — we bypassed the React wrapper entirely and used CodeMirror 6's native `EditorView` API directly, and the bug still persists in Chrome.
+We also confirmed this is **not** a React or `@uiw/react-codemirror` issue — we completely bypassed the React wrapper and used CodeMirror 6's native `EditorView` API directly, and the bug still persists.
 
 ## 2. Environment
 
@@ -22,58 +22,51 @@ We also confirmed this is **not** a React or `@uiw/react-codemirror` issue — w
 |------|---------|
 | OS | Windows 11 Version 25H2 (Build 26200.8457) |
 | **Affected browser** | **Google Chrome 149.0.7827.102** (Chromium 149.0.7827.102) |
-| **Also affected** | **Microsoft Edge 149.0.4022.62** (Chromium 149.0.7827.103) — after upgrade from 149.0.4022.52 |
-| Not affected | Firefox 150.0.3 / 151.0.4, Microsoft Edge 149.0.4022.52 (Chromium 149.0.7827.54), Quark Browser 6.8.6.856, Electron (v39.2.7) built-in browser (Chromium 142.0.7444.235) |
+| **Also affected** | **Microsoft Edge 149.0.4022.62** (Chromium 149.0.7827.103) — appeared after upgrade from 149.0.4022.52 |
+| Not affected | Firefox 150.0.3 / 151.0.4, Microsoft Edge 149.0.4022.52 (Chromium 149.0.7827.54), Quark Browser 144.0.7559.86, Electron (v39.2.7) built-in browser (Chromium 142.0.7444.235) |
 | Editor framework | CodeMirror 6 (`@codemirror/view@6.43.0`) |
-| React version | React 19 with Next.js 16 (issue persists without React) |
-| IME tested | Microsoft Pinyin (微软拼音), QQ Pinyin (QQ拼音) |
-| EditContext | **Not in use** — CodeMirror 6 only enables EditContext on Android (`browser.android`), not desktop Chrome |
+| React version | React 19 + Next.js 16 (issue persists without React) |
+| IME tested | Microsoft Pinyin, QQ Pinyin |
+| EditContext | **Not enabled** — CodeMirror 6 only enables EditContext on Android (`browser.android`); desktop Chrome uses the traditional contenteditable model |
 
 ### 2.1 Browser Version Details
 
 **Google Chrome (affected):**
 ```
-Google Chrome    149.0.7827.102 (正式版本) （64 位） (cohort: 149.0.7827.102 Rollout)
-修订版本          112f665d98a2fe84b156c74fbea2aed742f16c15-refs/branch-heads/7827@{#2560}
-操作系统          Windows 11 Version 25H2 (Build 26200.8457)
+Google Chrome    149.0.7827.102 (Official Build) (64-bit)
+Revision         112f665d98a2fe84b156c74fbea2aed742f16c15
+OS               Windows 11 Version 25H2 (Build 26200.8457)
 JavaScript       V8 14.9.207.27
-用户代理          Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36
 ```
 
 **Microsoft Edge (unaffected, before upgrade):**
 ```
-Microsoft Edge    149.0.4022.52 (正式版本) (64 位)
-修订              ebf9b65f6b0d1b9609ca9b578ef4a30e51e17fe8
-Chromium 版本     149.0.7827.54
-操作系统          Windows 11 Version 25H2 (Build 26200.8457)
+Microsoft Edge    149.0.4022.52 (Official Build) (64-bit)
+Chromium version  149.0.7827.54
 JavaScript        V8 14.9.20.6
-用户代理          Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0
 ```
 
 **Microsoft Edge (affected, after upgrade to Chromium 149.0.7827.103):**
 ```
-Microsoft Edge    149.0.4022.62 (正式版本) (64 位)
-修订              068a180137b01f28d261b1343e49c85b6348d4f5
-Chromium 版本     149.0.7827.103
-操作系统          Windows 11 Version 25H2 (Build 26200.8457)
+Microsoft Edge    149.0.4022.62 (Official Build) (64-bit)
+Chromium version  149.0.7827.103
 JavaScript        V8 14.9.20.8
-用户代理          Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0
 ```
 
 **Mozilla Firefox (unaffected):**
 ```
-150.0.3 (64 位) → 151.0.4 (64 位) — both versions unaffected
+150.0.3 (64-bit) → 151.0.4 (64-bit) — both versions unaffected
 ```
 
 **Quark Browser (unaffected):**
 ```
-夸克              144.0.7559.86 (正式版本) （64 位）
-修订版本          0692bb4c7f582f78a657917cddc1fef727422efe
-操作系统          Windows 11 Version 25H2 (Build 26200.8457)
+Quark             144.0.7559.86 (Official Build) (64-bit)
+Revision          0692bb4c7f582f78a657917cddc1fef727422efe
+OS                Windows 11 Version 25H2 (Build 26200.8457)
 JavaScript        V8 14.4.258.18
 ```
 
-**Critical finding:** Microsoft Edge was unaffected at Chromium 149.0.7827.54 but became affected after upgrading to Chromium 149.0.7827.103. This pinpoints the bug to a regression introduced between Chromium 149.0.7827.54 and 149.0.7827.103.
+**Critical finding:** Microsoft Edge was unaffected at Chromium 149.0.7827.54 but became affected after upgrading to Chromium 149.0.7827.103. This precisely pinpoints the regression to changes introduced between Chromium 149.0.7827.54 and 149.0.7827.103.
 
 ## 3. Detailed Symptom Description
 
@@ -89,13 +82,13 @@ Using **Microsoft Pinyin**:
 2. Press the period key twice — only the second **period (。)** appears
 3. Or: press period once (nothing appears), then press comma — the **comma (，)** appears, but the previous period is still missing
 
+All Chinese punctuation marks require two presses: ，《》。、？；：""{}|·!￥……&()—— etc.
 
-You need to press the Chinese punctuation mark twice ，《》。、？；：“”｛｝|·！￥……&（）—— etc.
-Other known issues include:
- - 【 or ‘ It will move the input cursor to the left
- - 】 or ’ It will move the input cursor to the right
+Other known issues:
+- `【` or `'` moves the input cursor to the left
+- `】` or `'` moves the input cursor to the right
 
-**Note:** The two inputs do not need to be the same symbol. For example, if the first input is a comma (，) and the second is a period (。), the period will be successfully committed. Conversely, if the first input is a period (。) and the second is a comma (，), the comma will succeed. The second IME composition always succeeds regardless of whether it matches the first. (See reproduction steps in 6.1 or 6.2)
+**Note:** The two inputs do not need to be the same symbol. For example, if the first input is a comma (，) and the second is a period (。), the period will be successfully committed. The second IME composition always succeeds regardless of whether it matches the first. (See reproduction steps in 6.1 or 6.2)
 
 ### 3.3 Symptom B: QQ Pinyin — All IME Input Requires Double Input
 
@@ -103,7 +96,7 @@ Using **QQ Pinyin**:
 
 1. Type `nihao` and select "你好" from the candidate list — **nothing appears** in the editor
 2. Type `nibuhao` and select "你不好" — **"你不好"** appears, but the previous "你好" is still missing
-3. The pattern reverses: the first composition of a session is always lost, the second succeeds
+3. Pattern: the first composition of a session is always lost, the second succeeds
 
 ### 3.4 Symptom C: Microsoft Pinyin — Chinese Characters Work, Punctuation Doesn't
 
@@ -118,8 +111,8 @@ This asymmetry between Microsoft Pinyin and QQ Pinyin suggests the bug is trigge
 
 We performed systematic testing across multiple browsers on the same Windows machine, same editor, same input methods:
 
-| Browser | Version | Chromium | Chinese Punctuation (微软拼音) | Chinese Characters (QQ拼音) | Status |
-|---------|---------|----------|-------------------------------|----------------------------|--------|
+| Browser | Version | Chromium Version | Chinese Punctuation (Microsoft Pinyin) | Chinese Characters (QQ Pinyin) | Status |
+|---------|---------|------------------|---------------------------------------|-------------------------------|--------|
 | **Google Chrome** | 149.0.7827.102 | 149.0.7827.102 | **FAIL** (double input) | **FAIL** (double input) | **BUG** |
 | **Microsoft Edge** | 149.0.4022.62 | 149.0.7827.103 | **FAIL** (double input) | **FAIL** (double input) | **BUG** |
 | Microsoft Edge | 149.0.4022.52 | 149.0.7827.54 | OK | OK | Not affected |
@@ -129,9 +122,8 @@ We performed systematic testing across multiple browsers on the same Windows mac
 
 **Key observations:**
 
-1. The bug is **not engine-wide** — other Chromium-based browsers with older versions do not exhibit the bug.
-2. **Microsoft Edge became affected after upgrading from Chromium 149.0.7827.54 to 149.0.7827.103**, proving the bug is a regression in Chromium 149.0.7827.103 (or between .54 and .103).
-3. The bug is in the **Chromium engine's IME integration**, not in Chrome-specific code as initially suspected. Google Chrome simply shipped the affected Chromium version first.
+1. The bug is more likely located in the **Chromium engine's IME integration logic**, rather than Google Chrome-specific code. In our testing, browsers using older Chromium versions did not exhibit the same behavior.
+2. **Microsoft Edge became affected after upgrading from Chromium 149.0.7827.54 to 149.0.7827.103**, indicating the regression was likely introduced between these two versions.
 
 ## 5. Technical Analysis
 
@@ -152,13 +144,23 @@ const view = new EditorView({
 
 **Result: The bug still persists in Chrome.** This confirms the issue is not in the React wrapper or the value synchronization mechanism, but in Chrome's own IME event handling.
 
-### 5.2 First IME Composition Has No Events At All
+### 5.2 Core Finding: No IME-Related Events Observed During First Abnormal Input
 
-A critical observation: when the first IME composition input is lost, **no events are dispatched at all** — not `compositionstart`, not `beforeinput`, not `input`, not `compositionend`. Chrome silently discards the first IME composition at the browser level. The IME text is committed by the OS but never reaches the web page's event system.
+Neither the editor's internal listeners nor external listeners received any IME-related events (`compositionstart`, `beforeinput`, `input`, `compositionend`) during the first abnormal input.
 
-On the second input attempt, all events fire normally (`compositionstart`, `beforeinput`, `input`, `compositionend`), and the text is successfully committed.
+This suggests that Chromium may be suppressing the first IME composition events, or failing to dispatch them correctly. On the second input attempt, all related events fire normally.
 
-This means the previously hypothesized event sequence (compositionstart → beforeinput → compositionend → beforeinput(insertText)) does **not** apply to the first input — because **no events fire at all** for the first input. The bug is not a race condition in event timing; it is a complete suppression of the first IME composition event sequence.
+The exact root cause requires further investigation by the Chromium team.
+
+**Verification method:** Execute the following code in Chrome DevTools Console, then try inputting Chinese punctuation:
+
+```javascript
+document.addEventListener('compositionstart', () => console.log('[IME] compositionstart'), true);
+document.addEventListener('compositionend', () => console.log('[IME] compositionend'), true);
+document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:', e.inputType, e.data), true);
+```
+
+On the first input, there are **no logs at all** in the Console. On the second input, all events print normally.
 
 ### 5.3 Why Other Browsers Are Not Affected
 
@@ -173,11 +175,13 @@ We verified that CodeMirror 6's `EditContext` API is **only enabled on Android**
 
 ## 6. Steps to Reproduce
 
-### 6.1 Minimal Reproduction Setup
+### 6.1 Minimal Reproduction
 
- For a concrete example:
+Steps to reproduce:
 
-1. Open the live demo at https://web-text.ale160.com/ or run locally – [repository](https://github.com/ale-160/web-text.git)
+1. On Windows, open Google Chrome (149+)
+   - Live demo: https://web-text.ale160.com/
+   - Source code: https://github.com/ale-160/web-text
 2. Click into the editor to focus it
 3. Switch to a Chinese IME (Microsoft Pinyin or QQ Pinyin)
 4. Try typing a Chinese period (。) — observe it does not appear
@@ -185,7 +189,7 @@ We verified that CodeMirror 6's `EditContext` API is **only enabled on Android**
 
 ### 6.2 Detailed Reproduction Steps
 
-1. Open the live demo at https://web-text.ale160.com/ (or run locally) in Chrome on Windows
+1. On Windows, open the [live demo](https://web-text.ale160.com/) or [local test](http://localhost:3000) in Chrome
 2. Click the editor to focus
 
 **Scenario 1: Chinese Punctuation (Microsoft Pinyin)**
@@ -207,7 +211,7 @@ We verified that CodeMirror 6's `EditContext` API is **only enabled on Android**
 
 ## 7. Our Debugging and Fix Attempt History
 
-We spent extensive time investigating this issue before identifying it as a Chromium engine regression. Here is a summary of our debugging journey:
+We spent extensive time investigating this issue before identifying it as a Chromium engine regression. Below is a summary of our debugging process:
 
 ### Attempt 1: Composition Event Guard
 Added `!update.composing` checks in `onChange` and `setTimeout(0)` in `handleCompositionEnd`. **Result**: No improvement.
@@ -222,13 +226,13 @@ Rewrote the editor to use `@uiw/react-codemirror`'s `CodeMirror` React component
 Added detailed `onUpdate` and `onChange` logging to trace every transaction, annotation, and DOM change. **Result**: Discovered that `update.composing` returns `undefined` (not `false`) in this CodeMirror version, and that `@uiw/react-codemirror` has an internal `typingLatch` mechanism (200ms `TimeoutLatch`) with `ExternalChange` annotations.
 
 ### Attempt 5: Cross-Browser Testing
-Systematically tested in Chrome, Firefox, Edge, Quark, and Electron (v39.2.7) built-in browser. **Result**: Identified that **only Google Chrome** exhibits the bug, initially suggesting a browser-specific issue.
+Systematically tested in Chrome, Firefox, Edge, Quark, and Electron (v39.2.7) built-in browser. **Result**: Initially identified that only Google Chrome exhibited the bug.
 
 ### Attempt 6: Composition Buffering Workaround
 Implemented a buffering mechanism in `handleChange` that detects `viewUpdate.composing` state, buffers onChange calls during composition, and flushes after a 50ms delay post-composition. **Result**: No improvement — the first IME input never reaches the JavaScript event system at all.
 
-### Attempt 7: Remove internalValue State, Stabilize handleChange
-Removed the `internalValue` state and `useEffect` synchronization that was causing React re-render race conditions. Made `handleChange` stable with empty dependency array. **Result**: No improvement — the bug is not caused by React re-renders.
+### Attempt 7: Remove internalValue State
+Removed the `internalValue` state and `useEffect` synchronization that was causing React re-render race conditions. **Result**: No improvement — the bug is not caused by React re-renders.
 
 ### Attempt 8: Bypass @uiw/react-codemirror Entirely
 Completely removed the `@uiw/react-codemirror` React wrapper and used CodeMirror 6's native `EditorView` API directly, creating the editor in a single `useEffect([], [])` with no value prop synchronization. **Result**: No improvement — the bug persists even without any React value sync mechanism. This conclusively proves the issue is in Chromium's IME event handling, not in the application code.
@@ -236,7 +240,19 @@ Completely removed the `@uiw/react-codemirror` React wrapper and used CodeMirror
 ### Attempt 9: Edge Upgrade Regression Test
 Upgraded Microsoft Edge from Chromium 149.0.7827.54 to 149.0.7827.103. **Result**: Edge went from unaffected to affected, confirming the bug is a Chromium engine regression introduced between Chromium 149.0.7827.54 and 149.0.7827.103.
 
-## 8. Related Issues
+## 8. Community Independent Confirmations and Related Issues
+
+### 8.1 Community Independent Confirmations
+
+This issue has been independently reported or discussed in multiple communities:
+
+- Luogu (Chinese programming community)
+- CodeMirror official forum
+- W3C mailing list
+
+These independent reports indicate that the issue is not caused by a single user's environment, and has been repeatedly observed by users across different communities.
+
+### 8.2 Potentially Related Issues
 
 | Reference | Title | Status | Relevance |
 |-----------|-------|--------|-----------|
@@ -249,23 +265,23 @@ Upgraded Microsoft Edge from Chromium 149.0.7827.54 to 149.0.7827.103. **Result*
 
 ## 9. Suggested Investigation Areas for Chromium Team
 
-1. **First IME composition event suppression**: The most critical finding is that Chromium silently suppresses the first IME composition — no `compositionstart`, `beforeinput`, `input`, or `compositionend` events are dispatched for the first IME input after editor focus. Investigate why Chromium's Windows IME integration fails to dispatch these events on the first composition.
+1. **First IME composition event suppression**: The most critical finding is that Chromium silently suppresses the first IME composition — no `compositionstart`, `beforeinput`, `input`, or `compositionend` events are dispatched for the first IME input. Investigate why Chromium's Windows IME integration fails to dispatch these events on the first composition.
 
 2. **Regression between Chromium 149.0.7827.54 and 149.0.7827.103**: Microsoft Edge was unaffected at Chromium 149.0.7827.54 but became affected at 149.0.7827.103. Identify the exact commit that introduced the regression by bisecting between these two versions, focusing on IME-related changes.
 
 ## 10. Impact Assessment
 
-This bug affects **all web-based editors** built on CodeMirror 6 (and potentially other contenteditable-based editors) when used in Chromium 149.0.7827.103+ on Windows with Chinese/Japanese/Korean IME. Given that:
+This bug has been observed to **affect editors based on CodeMirror 6** (and potentially other contenteditable-based editors) when used in Chromium 149.0.7827.103+ on Windows desktop with Chinese/Japanese/Korean IME. Given that:
 
 - Chrome has ~65% global browser market share
-- Chinese users represent Chrome's largest user base (900M+)
 - CodeMirror 6 is used by thousands of web applications (documentation sites, note-taking apps, IDEs, CMS systems)
-- The bug makes basic Chinese text input fundamentally broken
-- The regression has now spread to Microsoft Edge as well
+- This bug causes basic Chinese character/partial IME Chinese input to be unavailable
+- This bug significantly impacts the Chinese input experience and causes partial input content loss
+- The regression has spread to Microsoft Edge
 
-This constitutes a **critical usability regression** for a significant portion of Chromium-based browser users.
+For CodeMirror users who rely on IME input, this constitutes a **significant usability regression**.
 
-## 11. Temporary Workaround for Developers
+## 11. Temporary Workaround
 
 Until this bug is fixed in Chromium, there is no reliable application-level workaround. We have exhausted all approaches at the JavaScript/React level:
 
@@ -275,16 +291,16 @@ Until this bug is fixed in Chromium, there is no reliable application-level work
 
 The only viable workarounds are:
 
-1. **Recommend users switch to a different browser** (Firefox, Quark) for CJK input, or use an older Chromium version (before 149.0.7827.103).
-2. **Monitor the CodeMirror issue tracker** for a Chromium-specific fix or workaround at the editor library level.
-3. **File a Chromium bug report** at https://bugs.chromium.org/ to bring this to the Chromium team's attention.
+1. **Recommend users switch to a different browser** (Firefox, Quark) for Chinese input, or use an older Chromium version (before 149.0.7827.103).
+2. **Monitor the CodeMirror Issue Tracker** for a Chromium-specific fix or workaround at the editor library level.
+3. **File a Chromium bug report** (https://bugs.chromium.org/) to bring this to the Chromium team's attention.
 
 ## 12. References
 
-- **Test application**: https://web-text.ale160.com/
-- **Source code & self‑hosting**: https://github.com/ale-160/web-text (see README.md for local setup)
-- **洛谷公告 (Luogu announcement — Chinese community confirmation)**: https://www.luogu.com.cn/discuss/1303381
+- **Live demo**: https://web-text.ale160.com/
+- **Reproduction project source code**: https://github.com/ale-160/web-text
+- **Luogu announcement (Chinese community confirmation)**: https://www.luogu.com.cn/discuss/1303381
 - **CodeMirror forum discussion (high community attention)**: https://discuss.codemirror.net/t/chinese-ime-punctuation-input-loses-every-other-keypress-requires-2-presses-per-character/9741
 - **W3C official mailing list (root cause: Chrome error)**: https://lists.w3.org/Archives/Public/public-webapps-github/2025Apr/0087.html
 
-For more precise details, see the Chinese version of this report (https://github.com/ale-160/web-text/blob/master/docs/CHROME_IME_BUG_REPORT.md).
+For more precise details, see the [Chinese version](https://github.com/ale-160/web-text/blob/master/docs/CHROME_IME_BUG_REPORT.md) of this report .
