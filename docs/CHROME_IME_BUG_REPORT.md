@@ -1,4 +1,4 @@
-# Bug 报告：Chromium 149+ Windows 中文输入法首次输入丢失
+# Bug 报告：Chromium 149+ Windows 中文输入首次输入丢失
 
 **报告人：** Web-text 项目组  
 **日期：** 2026-06-10  
@@ -79,13 +79,12 @@ JavaScript        V8 14.4.258.18
 使用**微软拼音**：
 
 1. 切换到中文输入模式
-2. 按句号键（。）——编辑器中**什么都没有出现**
-3. 按逗号键（，）——**逗号（，）出现了**，但之前按的句号（。）仍然丢失
-4. 再按句号键——**句号（。）出现了**
+2. 连续按两次句号键——仅第二次**句号（。）出现**
+3. 按句号键（。）——编辑器中**什么都没有出现**，再按逗号键（，）——**逗号（，）出现了**，但之前按的句号（。）仍然丢失
 
 也就是说：每个标点符号都需要按两次。第一次输入被静默丢弃，第二次才能成功写入。这适用于所有中文标点：。，：；！？""''【】、《》（）
 
-**注意：** 两次输入不需要是同一个符号。例如第一次输入逗号（，），第二次输入句号（。），句号会成功写入。反过来也一样。第二次 IME 合成总是能成功，无论是否与第一次相同。（测试地址：https://web-text.ale160.com/ ）
+**注意：** 两次输入不需要是同一个符号。例如第一次输入逗号（，），第二次输入句号（。），句号会成功写入。反过来也一样。第二次 IME 合成总是能成功，无论是否与第一次相同。（复现步骤见6.1或6.2）
 
 ### 3.3 症状 B：QQ 拼音——所有输入都需要两次
 
@@ -177,7 +176,7 @@ document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:'
 
 任何 Chrome 中的 CodeMirror 6 编辑器实例都可以复现此问题。具体步骤：
 
-1. 在 Windows 上用 Google Chrome（149+）打开 https://web-text.ale160.com/ （我们的测试环境）
+1. 在 Windows 上用 Google Chrome（149+）[在线测试]( https://web-text.ale160.com/ )或本地部署（[GitHub地址](https://github.com/ale-160/web-text)）
 2. 点击编辑器聚焦
 3. 切换到中文输入法（微软拼音或 QQ 拼音）
 4. 尝试输入中文句号（。）——观察它不会出现
@@ -185,28 +184,25 @@ document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:'
 
 ### 6.2 详细复现步骤
 
+1. 在 Windows 上用 Chrome 打开 [在线测试](https://web-text.ale160.com/) 或[本地测试](http://localhost:3000)
+2. 切换到编辑模式
+3. 点击编辑器聚焦
+
 **场景 1：中文标点（微软拼音）**
 
-1. 在 Windows 上用 Chrome 打开 https://web-text.ale160.com/ （我们的测试环境）
-2. 切换到编辑模式
-3. 点击编辑器聚焦
-4. 切换输入法为微软拼音
-5. 按 `.` 键（句号）——期望 `。` 出现
-6. **实际结果：** 什么都没有出现。第一次输入被静默丢弃。
-7. 按 `,` 键（逗号）——期望 `，` 出现
-8. **实际结果：** `，` 出现了，确认第二次输入成功
+1. 切换输入法为微软拼音
+2. 按 `.` 键（句号）——期望 `。` 出现
+3. **实际结果：** 什么都没有出现。第一次输入被静默丢弃。
+4. 按 `,` 键（逗号）——期望 `，` 出现
+5. **实际结果：** `，` 出现了，确认第二次输入成功
 
 **场景 2：中文汉字（QQ 拼音）**
-
-1. 在 Windows 上用 Chrome 打开 https://web-text.ale160.com/ （我们的测试环境）
-2. 切换到编辑模式
-3. 点击编辑器聚焦
-4. 切换输入法为 QQ 拼音
-5. 键盘输入 `nihao`
-6. 从候选弹窗中选择"你好"
-7. **实际结果：** 编辑器中什么都没有出现。第一次合成丢失。
-8. 再次输入 `nihao` 并选择"你好"
-9. **实际结果：** "你好"出现了，确认第二次合成成功
+1. 切换输入法为 QQ 拼音
+2. 键盘输入 `nihao`
+3. 从候选弹窗中选择"你好"
+4. **实际结果：** 编辑器中什么都没有出现。第一次合成丢失。
+5. 再次输入 `nihao` 并选择"你好"
+6. **实际结果：** "你好"出现了，确认第二次合成成功
 
 ## 7. 我们的排查历程
 
@@ -284,7 +280,7 @@ document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:'
 
 ## 12. 参考资料
 
-- **测试应用**：https://web-text.ale160.com/
+- **测试应用**：web-text，GitHub仓库：https://ale160.github.io/web-text/
 - **洛谷公告（中文社区确认）**：https://www.luogu.com.cn/discuss/1303381
 - **CodeMirror 论坛讨论（高社区关注度）**：https://discuss.codemirror.net/t/chinese-ime-punctuation-input-loses-every-other-keypress-requires-2-presses-per-character/9741
 - **W3C 官方邮件列表（根因：Chrome 错误）**：https://lists.w3.org/Archives/Public/public-webapps-github/2025Apr/0087.html
