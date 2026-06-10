@@ -280,7 +280,8 @@ document.addEventListener('beforeinput', (e) => console.log('[IME] beforeinput:'
 
 ## 12. 参考资料
 
-- **测试应用**：web-text，GitHub仓库：https://ale160.github.io/web-text/
+- **测试应用**：web-text，GitHub仓库：https://github.com/ale-160/web-text
 - **洛谷公告（中文社区确认）**：https://www.luogu.com.cn/discuss/1303381
 - **CodeMirror 论坛讨论（高社区关注度）**：https://discuss.codemirror.net/t/chinese-ime-punctuation-input-loses-every-other-keypress-requires-2-presses-per-character/9741
 - **W3C 官方邮件列表（根因：Chrome 错误）**：https://lists.w3.org/Archives/Public/public-webapps-github/2025Apr/0087.html
+
