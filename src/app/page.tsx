@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize } from 'lucide-react';
+import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize, Code2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
@@ -11,6 +11,7 @@ import { RenameModal } from '@/components/ui/RenameModal';
 import { HelpModal } from '@/components/ui/HelpModal';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownPreview } from '@/components/MarkdownPreview';
+import { BrowserWarning } from '@/components/BrowserWarning';
 import { getDefaultContent } from '@/data/defaultContent';
 import { getStrings } from '@/data/i18n';
 import {
@@ -336,6 +337,8 @@ export default function EditorPage() {
         </div>
       </header>
 
+      <BrowserWarning />
+
       <div className="flex-1 min-h-0 overflow-hidden">
         {viewMode === 'edit' && (
           <MarkdownEditor
@@ -398,6 +401,27 @@ export default function EditorPage() {
         isOpen={showHelp}
         onClose={() => setShowHelp(false)}
       />
+
+      <footer className="flex items-center justify-center gap-4 px-4 py-2 border-t border-border bg-card/50 text-xs text-muted-foreground">
+        <a
+          href="https://github.com/ale-160/web-text.git"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+        >
+          <Code2 className="w-3.5 h-3.5" />
+          <span>{t.githubRepo}</span>
+        </a>
+        <span className="text-border">|</span>
+        <a
+          href="https://ale160.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-foreground transition-colors"
+        >
+          {t.poweredBy}
+        </a>
+      </footer>
     </div>
   );
 }

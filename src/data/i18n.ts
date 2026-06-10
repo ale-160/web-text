@@ -114,6 +114,9 @@ export const STRINGS_ZH = {
   fileName: '文件名',
   
   back: '返回',
+
+  browserWarning: '⚠️ 使用 Chrome 或 Edge 浏览器时，请勿升级浏览器版本。Chromium 149.0.7827.103+ 存在中文输入法 Bug，会导致首次输入丢失。',
+  githubRepo: 'GitHub 仓库',
 };
 
 export const STRINGS_EN = {
@@ -230,6 +233,9 @@ export const STRINGS_EN = {
   fileName: 'File Name',
   
   back: 'Back',
+
+  browserWarning: '⚠️ If using Chrome or Edge, do not upgrade your browser. Chromium 149.0.7827.103+ has a Chinese IME bug that causes the first input to be lost.',
+  githubRepo: 'GitHub Repo',
 };
 
 export function getStrings(lang: Language = 'en') {
