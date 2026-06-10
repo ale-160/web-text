@@ -12,9 +12,9 @@
   "author": "web-text Team",
   "license": "Apache-2.0",
   "scripts": {
-    "dev": "next dev -p 8526",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 8526",
+    "start": "next start",
     "lint": "eslint",
     "preview": "npx serve out"
   },

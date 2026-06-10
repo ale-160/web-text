@@ -30,4 +30,8 @@ next-env.d.ts
 *.swp
 *.swo
 
+# doc
+/docs/
+/issues/
+
 
