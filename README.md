@@ -58,7 +58,8 @@ npm run dev
 - 使用 Chrome 或 Edge 的用户，**请勿升级浏览器版本**（浏览器会自动检查更新，建议关闭自动更新）
 - 可切换到 Firefox 或夸克浏览器进行中文输入
 
-Bug 报告: [中文版本 (Chinese version)](https://github.com/ale-160/hub-nav/issues/1)  
+**Bug 报告：** [中文版本 (Chinese version)](https://github.com/ale-160/web-text/issues/1)  
+**Chromium 官方 Bug 跟踪器（已提交官方跟进）：** [Issue #523134891](https://issues.chromium.org/issues/523134891) （欢迎前往该页面点击右上角 `+1` 投票以提升排查优先级！）
 
 ## 开源协议
 

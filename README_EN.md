@@ -1,6 +1,7 @@
 # web-text
 
-English | [中文](README.md)
+English | [中文](README.md)  
+PS: English Version completed with the assistance of translation tools.For more precise details, see the Chinese version of this report .
 
 A simple and elegant online Markdown editor. All data is saved locally in your browser, no privacy concerns.
 
@@ -58,7 +59,8 @@ On Windows desktop, Chromium 149.0.7827.103 and above (including Google Chrome a
 - If using Chrome or Edge, **do not upgrade your browser** (browsers auto-check for updates; consider disabling auto-update)
 - Switch to Firefox or Quark Browser for Chinese input
 
-Bug report: [English version](https://github.com/ale-160/hub-nav/issues/2) (completed with the assistance of translation tools)  
+**Bug report:** [English version](https://github.com/ale-160/web-text/issues/2) (completed with the assistance of translation tools)  
+**Chromium Official Bug Tracker:** [Issue #523134891](https://issues.chromium.org/issues/523134891) (Please go here to upvote and track the official fix!)
 
 ## License
 
