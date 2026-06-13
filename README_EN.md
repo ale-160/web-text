@@ -72,7 +72,6 @@ To support the continued development of this project, please visit our unified s
 
 👉 [https://ale160.com/sponsor](https://ale160.com/sponsor)
 
-(WeChat Pay, Alipay, and PayPal are supported.)
 
 ## About
 

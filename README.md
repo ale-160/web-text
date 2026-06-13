@@ -71,7 +71,6 @@ Apache License 2.0
 
 👉 [https://ale160.com/sponsor](https://ale160.com/sponsor)
 
-（支持微信、支付宝、PayPal）
 
 ## 关于
 
