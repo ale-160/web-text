@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize, Code2 } from 'lucide-react';
+import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize, Code2, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
@@ -411,6 +411,16 @@ export default function EditorPage() {
         >
           <Code2 className="w-3.5 h-3.5" />
           <span>{t.githubRepo}</span>
+        </a>
+        <span className="text-border">|</span>
+        <a
+          href="https://ale160.com/sponsor"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors text-pink-600 dark:text-pink-400"
+        >
+          <Heart className="w-3.5 h-3.5" />
+          <span>{t.sponsor}</span>
         </a>
         <span className="text-border">|</span>
         <a

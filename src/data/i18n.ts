@@ -117,6 +117,7 @@ export const STRINGS_ZH = {
 
   browserWarning: '⚠️ 使用 Chrome 或 Edge 浏览器时，请勿升级浏览器版本。Chromium 149.0.7827.103+ 存在中文输入法 Bug，会导致首次输入丢失。',
   githubRepo: 'GitHub 仓库',
+  sponsor: '赞赏支持',
 };
 
 export const STRINGS_EN = {
@@ -236,6 +237,7 @@ export const STRINGS_EN = {
 
   browserWarning: '⚠️ If using Chrome or Edge, do not upgrade your browser. Chromium 149.0.7827.103+ has a Chinese IME bug that causes the first input to be lost.',
   githubRepo: 'GitHub Repo',
+  sponsor: 'Sponsor',
 };
 
 export function getStrings(lang: Language = 'en') {

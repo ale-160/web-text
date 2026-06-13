@@ -65,6 +65,14 @@ npm run dev
 
 Apache License 2.0
 
+## 支持与赞助 💖
+
+如需支持本项目的持续开发，请前往统一赞赏页面：
+
+👉 [https://ale160.com/sponsor](https://ale160.com/sponsor)
+
+（支持微信、支付宝、PayPal）
+
 ## 关于
 
 由 [ale-160](http://ale160.com/) 开发维护。

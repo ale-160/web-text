@@ -66,6 +66,14 @@ On Windows desktop, Chromium 149.0.7827.103 and above (including Google Chrome a
 
 Apache License 2.0
 
+## Support & Sponsorship 💖
+
+To support the continued development of this project, please visit our unified sponsorship page:
+
+👉 [https://ale160.com/sponsor](https://ale160.com/sponsor)
+
+(WeChat Pay, Alipay, and PayPal are supported.)
+
 ## About
 
 Developed and maintained by [ale-160](http://ale160.com/).
