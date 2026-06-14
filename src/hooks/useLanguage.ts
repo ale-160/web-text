@@ -13,8 +13,8 @@ function getBrowserLanguage(): Language {
   return 'en';
 }
 
-export function useLanguage() {
-  const [language, setLanguage] = useState<Language>('en');
+export function useLanguage(defaultLang?: Language) {
+  const [language, setLanguage] = useState<Language>(defaultLang ?? 'en');
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -28,11 +28,12 @@ export function useLanguage() {
       return;
     }
 
-    const browserLang = getBrowserLanguage();
+    // 优先使用路由传入的 defaultLang，其次浏览器检测
+    const browserLang = defaultLang ?? getBrowserLanguage();
     if (browserLang !== language) {
       setLanguage(browserLang);
     }
-  }, [language]);
+  }, [language, defaultLang]);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && isMounted) {

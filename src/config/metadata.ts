@@ -30,7 +30,7 @@ export const METADATA_ZH = {
   openGraph: {
     title: "web-text · 美观的在线 Markdown 编辑器",
     description: "简洁优雅的在线 Markdown 编辑器，支持实时预览、代码高亮、自动保存、暗色模式和多语言。100% 纯前端。",
-    url: "https://web-text.ale160.com",
+    url: "https://web-text.ale160.com/zh/",
     siteName: "web-text 官方网站",
     locale: "zh_CN",
     type: "website",
@@ -51,10 +51,10 @@ export const METADATA_ZH = {
     creator: "@ale160"
   },
   alternates: {
-    canonical: "https://web-text.ale160.com",
+    canonical: "https://web-text.ale160.com/zh/",
     languages: {
-      "en": "https://web-text.ale160.com",
-      "zh-CN": "https://web-text.ale160.com",
+      "en": "https://web-text.ale160.com/",
+      "zh-CN": "https://web-text.ale160.com/zh/"
     }
   }
 };
@@ -89,7 +89,7 @@ export const METADATA_EN = {
   openGraph: {
     title: "web-text · Beautiful Online Markdown Editor",
     description: "A beautiful, privacy-focused online Markdown editor with real-time preview, code highlighting, auto-save, dark mode, and bilingual support. 100% client-side.",
-    url: "https://web-text.ale160.com",
+    url: "https://web-text.ale160.com/",
     siteName: "web-text Official Website",
     locale: "en_US",
     type: "website",
@@ -110,10 +110,10 @@ export const METADATA_EN = {
     creator: "@ale160"
   },
   alternates: {
-    canonical: "https://web-text.ale160.com",
+    canonical: "https://web-text.ale160.com/",
     languages: {
-      "en": "https://web-text.ale160.com",
-      "zh-CN": "https://web-text.ale160.com",
+      "en": "https://web-text.ale160.com/",
+      "zh-CN": "https://web-text.ale160.com/zh/"
     }
   }
 };
