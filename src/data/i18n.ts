@@ -72,6 +72,7 @@ export const STRINGS_ZH = {
   helpKeyboardShortcuts: '键盘快捷键',
   helpFeatures: '功能介绍',
   poweredBy: '由阿乐一百六提供技术支持',
+  ale160: '阿乐一百六',
   visitWebsite: '访问网站',
   
   helpIntro: 'web-text 是一个简洁优雅的在线 Markdown 编辑器，所有数据保存在浏览器本地，无需担心隐私问题。',
@@ -192,6 +193,7 @@ export const STRINGS_EN = {
   helpKeyboardShortcuts: 'Keyboard Shortcuts',
   helpFeatures: 'Features',
   poweredBy: 'Powered by ale160',
+  ale160: 'ale160',
   visitWebsite: 'Visit website',
   
   helpIntro: 'web-text is a simple and elegant online Markdown editor. All data is saved locally in your browser, no privacy concerns.',

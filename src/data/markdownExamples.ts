@@ -90,8 +90,8 @@ export const getMarkdownExamples = (lang: Language): MarkdownExample[] => [
     title: lang === 'zh' ? '图片 (Images)' : 'Images',
     description: lang === 'zh' ? '插入图片，与链接类似但加 ! 前缀，可添加替代文本和标题' : 'Insert images, like links with ! prefix, add alt text and optional title',
     markdown: lang === 'zh'
-      ? '![ale160 Logo](https://ale160.com/favicon.ico)\n![带标题的图片](https://ale160.com/favicon.ico "ale160 logo") - 悬停查看标题'
-      : '![ale160 Logo](https://ale160.com/favicon.ico)\n![Image with title](https://ale160.com/favicon.ico "ale160 logo") - hover to see title',
+      ? '![ale160 Logo](https://ale160.com/favicon.png)\n![带标题的图片](https://ale160.com/favicon.png "ale160 logo") - 悬停查看标题'
+      : '![ale160 Logo](https://ale160.com/favicon.png)\n![Image with title](https://ale160.com/favicon.png "ale160 logo") - hover to see title',
     tags: [lang === 'zh' ? '多媒体' : 'Media']
   },
   {

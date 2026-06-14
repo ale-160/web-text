@@ -129,7 +129,7 @@ export function getMetadata(lang: string = "en"): Metadata {
     creator: metadata.creator,
     publisher: metadata.publisher,
     icons: {
-      icon: "https://ale160.com/favicon.ico",
+      icon: "https://ale160.com/favicon.png",
     },
     formatDetection: {
       email: false,
