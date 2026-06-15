@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useRef, useMemo } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
-import { languages } from '@codemirror/language-data';
+import { LanguageDescription } from '@codemirror/language';
 import { EditorView } from '@codemirror/view';
 import { oneDark } from '@codemirror/theme-one-dark';
 
@@ -14,18 +14,28 @@ interface MarkdownEditorProps {
 }
 
 export function MarkdownEditor({ value, onChange, theme }: MarkdownEditorProps) {
+  const [codeLanguages, setCodeLanguages] = useState<LanguageDescription[]>([]);
+  const languagesLoadedRef = useRef(false);
+
   const handleChange = useCallback((val: string) => {
     onChange(val);
+    // 当用户输入 ``` 时，动态加载语言数据并提供语言补全提示
+    if (!languagesLoadedRef.current && val.includes('```')) {
+      languagesLoadedRef.current = true;
+      import('@codemirror/language-data').then(mod => {
+        setCodeLanguages(mod.languages);
+      });
+    }
   }, [onChange]);
 
-  const extensions = [
+  const extensions = useMemo(() => [
     markdown({
       base: markdownLanguage,
-      codeLanguages: languages
+      codeLanguages: codeLanguages
     }),
     EditorView.lineWrapping,
     EditorView.contentAttributes.of({ 'aria-label': 'Markdown Input' }),
-  ];
+  ], [codeLanguages]);
 
   return (
     <div className="h-full w-full">

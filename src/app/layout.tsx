@@ -12,6 +12,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://ale160.com" />
+          <title></title>
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         {children}
         <Toaster position="top-center" richColors />
