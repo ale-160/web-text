@@ -23,7 +23,8 @@ export function MarkdownEditor({ value, onChange, theme }: MarkdownEditorProps) 
       base: markdownLanguage,
       codeLanguages: languages
     }),
-    EditorView.lineWrapping
+    EditorView.lineWrapping,
+    EditorView.contentAttributes.of({ 'aria-label': 'Markdown Input' }),
   ];
 
   return (

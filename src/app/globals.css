@@ -149,3 +149,46 @@
 .cm-scroller {
   overflow: auto !important;
 }
+
+/* Code syntax highlighting contrast fixes (WCAG 4.5:1 minimum) */
+/* Light theme overrides for highlight.js github.css */
+.hljs-comment,
+.hljs-quote {
+  color: #5c6370 !important;
+}
+
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #a626a4 !important;
+}
+
+.hljs-string,
+.hljs-addition {
+  color: #50a14f !important;
+}
+
+.hljs-number,
+.hljs-literal {
+  color: #986801 !important;
+}
+
+/* Dark theme overrides for highlight.js github-dark.css */
+.dark .hljs-comment,
+.dark .hljs-quote {
+  color: #8b949e !important;
+}
+
+.dark .hljs-keyword,
+.dark .hljs-selector-tag {
+  color: #d2a8ff !important;
+}
+
+.dark .hljs-string,
+.dark .hljs-addition {
+  color: #7ee787 !important;
+}
+
+.dark .hljs-number,
+.dark .hljs-literal {
+  color: #ffa657 !important;
+}

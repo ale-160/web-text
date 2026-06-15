@@ -1,12 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
-import 'highlight.js/styles/github-dark.css';
-import 'highlight.js/styles/github.css';
 
 interface MarkdownPreviewProps {
   content: string;
@@ -14,6 +12,29 @@ interface MarkdownPreviewProps {
 }
 
 export function MarkdownPreview({ content, theme }: MarkdownPreviewProps) {
+  const [, setHljsCssLoaded] = useState(false);
+
+  useEffect(() => {
+    // 动态加载 highlight.js 主题 CSS，避免阻塞初始渲染
+    const cssUrl = theme === 'dark'
+      ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css'
+      : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css';
+
+    // 移除旧的 highlight.js 样式链接
+    const existingLink = document.getElementById('hljs-theme-link');
+    if (existingLink) {
+      existingLink.setAttribute('href', cssUrl);
+    } else {
+      const link = document.createElement('link');
+      link.id = 'hljs-theme-link';
+      link.rel = 'stylesheet';
+      link.href = cssUrl;
+      link.onload = () => setHljsCssLoaded(true);
+      document.head.appendChild(link);
+    }
+
+    setHljsCssLoaded(true);
+  }, [theme]);
   return (
     <div className={`h-full w-full overflow-y-auto ${
       theme === 'dark' ? 'bg-gray-950' : 'bg-[#fdf6e3]'}`}>
@@ -190,8 +211,8 @@ export function MarkdownPreview({ content, theme }: MarkdownPreviewProps) {
             cursor: pointer;
           }
         `}</style>
-        <ReactMarkdown 
-          remarkPlugins={[remarkGfm]} 
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw, rehypeHighlight]}
         >
           {content}

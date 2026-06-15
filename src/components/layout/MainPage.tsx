@@ -1,7 +1,8 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize, Heart } from 'lucide-react';
+import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize, Heart, Menu, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
@@ -9,8 +10,6 @@ import { HistoryModal } from '@/components/ui/HistoryModal';
 import { ExportModal } from '@/components/ui/ExportModal';
 import { RenameModal } from '@/components/ui/RenameModal';
 import { HelpModal } from '@/components/ui/HelpModal';
-import { MarkdownEditor } from '@/components/MarkdownEditor';
-import { MarkdownPreview } from '@/components/MarkdownPreview';
 import { BrowserWarning } from '@/components/BrowserWarning';
 import { getDefaultContent } from '@/data/defaultContent';
 import { getStrings } from '@/data/i18n';
@@ -24,6 +23,33 @@ import {
   HistoryEntry,
   renameHistoryEntry
 } from '@/utils/storage';
+
+// 懒加载编辑器和预览组件，减少首屏 JS 体积
+const MarkdownEditor = dynamic(
+  () => import('@/components/MarkdownEditor').then(mod => ({ default: mod.MarkdownEditor })),
+  { ssr: false, loading: () => <EditorSkeleton /> }
+);
+
+const MarkdownPreview = dynamic(
+  () => import('@/components/MarkdownPreview').then(mod => ({ default: mod.MarkdownPreview })),
+  { ssr: false, loading: () => <PreviewSkeleton /> }
+);
+
+function EditorSkeleton() {
+  return (
+    <div className="h-full w-full flex items-center justify-center bg-background">
+      <div className="animate-pulse text-muted-foreground text-sm">Loading editor...</div>
+    </div>
+  );
+}
+
+function PreviewSkeleton() {
+  return (
+    <div className="h-full w-full flex items-center justify-center bg-[#fdf6e3] dark:bg-gray-950">
+      <div className="animate-pulse text-muted-foreground text-sm">Loading preview...</div>
+    </div>
+  );
+}
 
 type ViewMode = 'edit' | 'split' | 'preview';
 
@@ -198,6 +224,7 @@ export default function MainPage({ lang }: MainPageProps) {
   }, [toggleLanguage]);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleToggleFullscreen = useCallback(async () => {
     if (!document.fullscreenElement) {
@@ -238,68 +265,71 @@ export default function MainPage({ lang }: MainPageProps) {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
-      <header className="flex items-center px-6 py-4 border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="flex items-center gap-4 w-1/3">
+      <header className="flex items-center px-3 py-2 sm:px-6 sm:py-4 border-b border-border bg-card/50 backdrop-blur-sm">
+        {/* 左侧：Logo + 帮助 */}
+        <div className="flex items-center gap-2 sm:gap-4 flex-1 sm:w-1/3">
           <a href="https://ale160.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img src="https://ale160.com/images/logo-icon.png" alt="Logo" className="w-8 h-8 rounded" />
-            <span className="text-2xl font-bold text-primary">{t.appName}</span>
+            <span className="hidden sm:inline text-xl sm:text-2xl font-bold text-primary">{t.appName}</span>
           </a>
           <button
             onClick={() => setShowHelp(true)}
-            className="p-2 rounded-lg hover:bg-muted transition-colors"
+            className="min-w-[48px] min-h-[48px] sm:min-w-0 sm:min-h-0 sm:p-2 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
             title={t.help}
+            aria-label={t.help}
           >
             <HelpCircle className="w-5 h-5" />
           </button>
         </div>
 
+        {/* 中间：视图模式切换 */}
         <div className="flex items-center justify-center w-1/3">
           <div className="flex items-center gap-1 border border-border rounded-lg p-1">
             <button
               onClick={() => setViewMode('edit')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+              className={`flex items-center justify-center min-w-[48px] min-h-[48px] sm:min-w-0 sm:min-h-0 gap-2 px-2 sm:px-3 py-2 rounded-md transition-colors ${
                 viewMode === 'edit'
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               }`}
               title={t.editMode}
+              aria-label={t.editMode}
             >
               <Edit className="w-4 h-4" />
               <span className="text-sm font-medium hidden sm:inline">{t.editMode}</span>
             </button>
             <button
               onClick={() => setViewMode('split')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+              className={`flex items-center justify-center min-w-[48px] min-h-[48px] sm:min-w-0 sm:min-h-0 gap-2 px-2 sm:px-3 py-2 rounded-md transition-colors ${
                 viewMode === 'split'
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               }`}
               title={t.splitMode}
+              aria-label={t.splitMode}
             >
               <Split className="w-4 h-4" />
               <span className="text-sm font-medium hidden sm:inline">{t.splitMode}</span>
             </button>
             <button
               onClick={() => setViewMode('preview')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+              className={`flex items-center justify-center min-w-[48px] min-h-[48px] sm:min-w-0 sm:min-h-0 gap-2 px-2 sm:px-3 py-2 rounded-md transition-colors ${
                 viewMode === 'preview'
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               }`}
               title={t.previewMode}
+              aria-label={t.previewMode}
             >
               <Eye className="w-4 h-4" />
               <span className="text-sm font-medium hidden sm:inline">{t.previewMode}</span>
             </button>
-            <div className="w-px h-6 bg-border mx-1" />
+            <div className="w-px h-6 bg-border mx-1 hidden sm:block" />
             <button
               onClick={handleToggleFullscreen}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
-                viewMode === 'edit' || viewMode === 'split' || viewMode === 'preview'
-                  ? 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  : ''
-              }`}
+              className={`hidden sm:flex items-center justify-center gap-2 px-3 py-2 rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted`}
               title={t.fullscreen}
+              aria-label={t.fullscreen}
             >
               {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
               <span className="text-sm font-medium hidden sm:inline">{t.fullscreen}</span>
@@ -307,48 +337,114 @@ export default function MainPage({ lang }: MainPageProps) {
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 w-1/3">
+        {/* 右侧：桌面端功能按钮 / 移动端菜单按钮 */}
+        <div className="flex items-center justify-end w-1/3">
+          {/* 桌面端：直接显示功能按钮 */}
+          <div className="hidden sm:flex items-center gap-2">
+            <button
+              onClick={() => setShowHistory(true)}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
+              title={t.history}
+              aria-label={t.history}
+            >
+              <History className="w-5 h-5" />
+            </button>
+            <button
+              onClick={handleCopy}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
+              title={t.copy}
+              aria-label={t.copy}
+            >
+              <Copy className="w-5 h-5" />
+            </button>
+            <button
+              onClick={handleExport}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
+              title={t.export}
+              aria-label={t.export}
+            >
+              <Download className="w-5 h-5" />
+            </button>
+            <button
+              onClick={handleToggleLanguage}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
+              title={t.language}
+              aria-label={t.language}
+            >
+              <Globe className="w-5 h-5" />
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
+              title={t.theme}
+              aria-label={t.theme}
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+          </div>
+
+          {/* 移动端：菜单切换按钮 */}
           <button
-            onClick={() => setShowHistory(true)}
-            className="p-2 rounded-lg hover:bg-muted transition-colors"
-            title={t.history}
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            className="sm:hidden min-w-[48px] min-h-[48px] flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+            aria-label={showMobileMenu ? 'Close menu' : 'Open menu'}
           >
-            <History className="w-5 h-5" />
-          </button>
-          <button
-            onClick={handleCopy}
-            className="p-2 rounded-lg hover:bg-muted transition-colors"
-            title={t.copy}
-          >
-            <Copy className="w-5 h-5" />
-          </button>
-          <button
-            onClick={handleExport}
-            className="p-2 rounded-lg hover:bg-muted transition-colors"
-            title={t.export}
-          >
-            <Download className="w-5 h-5" />
-          </button>
-          <button
-            onClick={handleToggleLanguage}
-            className="p-2 rounded-lg hover:bg-muted transition-colors"
-            title={t.language}
-          >
-            <Globe className="w-5 h-5" />
-          </button>
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-lg hover:bg-muted transition-colors"
-            title={t.theme}
-          >
-            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </header>
 
+      {/* 移动端下拉菜单 */}
+      {showMobileMenu && (
+        <div className="sm:hidden border-b border-border bg-card/95 backdrop-blur-sm">
+          <div className="flex items-center justify-around px-2 py-2">
+            <button
+              onClick={() => { setShowHistory(true); setShowMobileMenu(false); }}
+              className="min-w-[48px] min-h-[48px] flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
+              aria-label={t.history}
+            >
+              <History className="w-5 h-5" />
+              <span className="text-[10px] text-muted-foreground">{t.history}</span>
+            </button>
+            <button
+              onClick={() => { handleCopy(); setShowMobileMenu(false); }}
+              className="min-w-[48px] min-h-[48px] flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
+              aria-label={t.copy}
+            >
+              <Copy className="w-5 h-5" />
+              <span className="text-[10px] text-muted-foreground">{t.copy}</span>
+            </button>
+            <button
+              onClick={() => { handleExport(); setShowMobileMenu(false); }}
+              className="min-w-[48px] min-h-[48px] flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
+              aria-label={t.export}
+            >
+              <Download className="w-5 h-5" />
+              <span className="text-[10px] text-muted-foreground">{t.export}</span>
+            </button>
+            <button
+              onClick={() => { handleToggleLanguage(); setShowMobileMenu(false); }}
+              className="min-w-[48px] min-h-[48px] flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
+              aria-label={t.language}
+            >
+              <Globe className="w-5 h-5" />
+              <span className="text-[10px] text-muted-foreground">{t.language}</span>
+            </button>
+            <button
+              onClick={() => { toggleTheme(); setShowMobileMenu(false); }}
+              className="min-w-[48px] min-h-[48px] flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
+              aria-label={t.theme}
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              <span className="text-[10px] text-muted-foreground">{t.theme}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <BrowserWarning />
 
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <main className="flex-1 min-h-0 overflow-hidden">
         {viewMode === 'edit' && (
           <MarkdownEditor
             value={content}
@@ -381,7 +477,7 @@ export default function MainPage({ lang }: MainPageProps) {
             </div>
           </div>
         )}
-      </div>
+      </main>
 
       <HistoryModal
         isOpen={showHistory}
