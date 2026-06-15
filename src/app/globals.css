@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -148,6 +147,83 @@
 
 .cm-scroller {
   overflow: auto !important;
+}
+
+/* CodeMirror light theme syntax highlighting contrast fixes (WCAG 4.5:1) */
+.cm-editor:not(.cm-focused) .cm-content,
+.cm-editor .cm-content {
+  caret-color: #000;
+}
+
+/* Markdown headings, bold */
+.cm-header-1, .cm-header-2, .cm-header-3,
+.cm-header-4, .cm-header-5, .cm-header-6 {
+  color: #1a1a2e !important;
+}
+
+/* Strong/bold text */
+.cm-strong {
+  color: #1a1a2e !important;
+}
+
+/* Emphasis/italic */
+.cm-em {
+  color: #374151 !important;
+}
+
+/* Links */
+.cm-link {
+  color: #1d4ed8 !important;
+}
+
+/* URLs in links */
+.cm-url {
+  color: #2563eb !important;
+}
+
+/* Inline code */
+.cm-monospace {
+  color: #be185d !important;
+}
+
+/* Code blocks / code markers */
+.cm-comment {
+  color: #5c6370 !important;
+}
+
+/* Processing instructions / meta */
+.cm-meta {
+  color: #5c6370 !important;
+}
+
+/* CodeMirror dark theme (oneDark) contrast fixes */
+.cm-editor.cm-dark .cm-header-1,
+.cm-editor.cm-dark .cm-header-2,
+.cm-editor.cm-dark .cm-header-3,
+.cm-editor.cm-dark .cm-header-4,
+.cm-editor.cm-dark .cm-header-5,
+.cm-editor.cm-dark .cm-header-6 {
+  color: #e5e7eb !important;
+}
+
+.cm-editor.cm-dark .cm-strong {
+  color: #f3f4f6 !important;
+}
+
+.cm-editor.cm-dark .cm-link {
+  color: #60a5fa !important;
+}
+
+.cm-editor.cm-dark .cm-url {
+  color: #93c5fd !important;
+}
+
+.cm-editor.cm-dark .cm-monospace {
+  color: #f472b6 !important;
+}
+
+.cm-editor.cm-dark .cm-comment {
+  color: #8b949e !important;
 }
 
 /* Code syntax highlighting contrast fixes (WCAG 4.5:1 minimum) */
