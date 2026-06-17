@@ -46,20 +46,13 @@ npm run dev
 
 ## 已知问题
 
-### Chromium 149.0.7827.103+ 中文输入法 Bug
+### ✅ Chromium 中文输入法 Bug 已修复
 
-在 Windows 桌面端，Chromium 149.0.7827.103 及以上版本（包括 Google Chrome 和 Microsoft Edge）存在一个严重的 IME（输入法）回归 Bug：
+之前报告的 Chromium 149.0.7827.103+ Windows 桌面端中文输入法首次输入丢失的问题，已在 **Chromium 149.0.7827.156** 中修复。
 
-- **症状**：首次使用中文输入法输入时，内容会被静默丢弃，需要输入两次才能成功写入
-- **影响范围**：所有基于 `contenteditable` 的网页编辑器，包括 CodeMirror 6
-- **不受影响**：Firefox、夸克浏览器、Electron 内置浏览器、Chromium 149.0.7827.54 及更早版本
-
-**临时解决方案**：
-- 使用 Chrome 或 Edge 的用户，**请勿升级浏览器版本**（浏览器会自动检查更新，建议关闭自动更新）
-- 可切换到 Firefox 或夸克浏览器进行中文输入
-
-**Bug 报告：** [中文版本 (Chinese version)](https://github.com/ale-160/web-text/issues/1)  
-**Chromium 官方 Bug 跟踪器（已提交官方跟进）：** [Issue #523134891](https://issues.chromium.org/issues/523134891) （欢迎前往该页面点击右上角 `+1` 投票以提升排查优先级！）
+- **修复版本**：Google Chrome 149.0.7827.156 及以上
+- **原因**：Chromium 引擎在 Windows 桌面端的 IME 合成事件派发回归
+- **历史记录**：详见 [Chromium Issue #523134891](https://issues.chromium.org/issues/523134891)
 
 ## 开源协议
 

@@ -47,20 +47,13 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ## Known Issues
 
-### Chromium 149.0.7827.103+ Chinese IME Bug
+### ✅ Chromium Chinese IME Bug Fixed
 
-On Windows desktop, Chromium 149.0.7827.103 and above (including Google Chrome and Microsoft Edge) has a severe IME (Input Method Editor) regression bug:
+The previously reported Chromium 149.0.7827.103+ Windows desktop Chinese IME first-input-lost issue has been fixed in **Chromium 149.0.7827.156**.
 
-- **Symptom**: The first IME composition input is silently lost; you need to type twice for it to be committed
-- **Scope**: All `contenteditable`-based web editors, including CodeMirror 6
-- **Not affected**: Firefox, Quark Browser, Electron built-in browser, Chromium 149.0.7827.54 and earlier
-
-**Workarounds**:
-- If using Chrome or Edge, **do not upgrade your browser** (browsers auto-check for updates; consider disabling auto-update)
-- Switch to Firefox or Quark Browser for Chinese input
-
-**Bug report:** [English version](https://github.com/ale-160/web-text/issues/2) (completed with the assistance of translation tools)  
-**Chromium Official Bug Tracker:** [Issue #523134891](https://issues.chromium.org/issues/523134891) (Please go here to upvote and track the official fix!)
+- **Fixed in**: Google Chrome 149.0.7827.156 and above
+- **Cause**: Regression in Chromium engine's Windows desktop IME composition event dispatch
+- **Historical record**: See [Chromium Issue #523134891](https://issues.chromium.org/issues/523134891)
 
 ## License
 

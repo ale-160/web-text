@@ -10,7 +10,6 @@ import { HistoryModal } from '@/components/ui/HistoryModal';
 import { ExportModal } from '@/components/ui/ExportModal';
 import { RenameModal } from '@/components/ui/RenameModal';
 import { HelpModal } from '@/components/ui/HelpModal';
-import { BrowserWarning } from '@/components/BrowserWarning';
 import { getDefaultContent } from '@/data/defaultContent';
 import { getStrings } from '@/data/i18n';
 import {
@@ -274,7 +273,7 @@ export default function MainPage({ lang }: MainPageProps) {
           </a>
           <button
             onClick={() => setShowHelp(true)}
-            className="min-w-[48px] min-h-[48px] sm:min-w-0 sm:min-h-0 sm:p-2 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+            className="min-w-12 min-h-12 sm:min-w-0 sm:min-h-0 sm:p-2 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
             title={t.help}
             aria-label={t.help}
           >
@@ -287,7 +286,7 @@ export default function MainPage({ lang }: MainPageProps) {
           <div className="flex items-center gap-1 border border-border rounded-lg p-1">
             <button
               onClick={() => setViewMode('edit')}
-              className={`flex items-center justify-center min-w-[48px] min-h-[48px] sm:min-w-0 sm:min-h-0 gap-2 px-2 sm:px-3 py-2 rounded-md transition-colors ${
+              className={`flex items-center justify-center min-w-12 min-h-12 sm:min-w-0 sm:min-h-0 gap-2 px-2 sm:px-3 py-2 rounded-md transition-colors ${
                 viewMode === 'edit'
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -300,7 +299,7 @@ export default function MainPage({ lang }: MainPageProps) {
             </button>
             <button
               onClick={() => setViewMode('split')}
-              className={`flex items-center justify-center min-w-[48px] min-h-[48px] sm:min-w-0 sm:min-h-0 gap-2 px-2 sm:px-3 py-2 rounded-md transition-colors ${
+              className={`flex items-center justify-center min-w-12 min-h-12 sm:min-w-0 sm:min-h-0 gap-2 px-2 sm:px-3 py-2 rounded-md transition-colors ${
                 viewMode === 'split'
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -313,7 +312,7 @@ export default function MainPage({ lang }: MainPageProps) {
             </button>
             <button
               onClick={() => setViewMode('preview')}
-              className={`flex items-center justify-center min-w-[48px] min-h-[48px] sm:min-w-0 sm:min-h-0 gap-2 px-2 sm:px-3 py-2 rounded-md transition-colors ${
+              className={`flex items-center justify-center min-w-12 min-h-12 sm:min-w-0 sm:min-h-0 gap-2 px-2 sm:px-3 py-2 rounded-md transition-colors ${
                 viewMode === 'preview'
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -386,7 +385,7 @@ export default function MainPage({ lang }: MainPageProps) {
           {/* 移动端：菜单切换按钮 */}
           <button
             onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="sm:hidden min-w-[48px] min-h-[48px] flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+            className="sm:hidden min-w-12 min-h-12 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
             aria-label={showMobileMenu ? 'Close menu' : 'Open menu'}
           >
             {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -400,15 +399,15 @@ export default function MainPage({ lang }: MainPageProps) {
           <div className="flex items-center justify-around px-2 py-2">
             <button
               onClick={() => { setShowHistory(true); setShowMobileMenu(false); }}
-              className="min-w-[48px] min-h-[48px] flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
+              className="min-w-12 min-h-12 flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
               aria-label={t.history}
             >
               <History className="w-5 h-5" />
               <span className="text-[10px] text-muted-foreground">{t.history}</span>
             </button>
             <button
-              onClick={() => { handleCopy(); setShowMobileMenu(false); }}
-              className="min-w-[48px] min-h-[48px] flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
+              onClick={() => { void handleCopy(); setShowMobileMenu(false); }}
+              className="min-w-12 min-h-12 flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
               aria-label={t.copy}
             >
               <Copy className="w-5 h-5" />
@@ -416,7 +415,7 @@ export default function MainPage({ lang }: MainPageProps) {
             </button>
             <button
               onClick={() => { handleExport(); setShowMobileMenu(false); }}
-              className="min-w-[48px] min-h-[48px] flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
+              className="min-w-12 min-h-12 flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
               aria-label={t.export}
             >
               <Download className="w-5 h-5" />
@@ -424,7 +423,7 @@ export default function MainPage({ lang }: MainPageProps) {
             </button>
             <button
               onClick={() => { handleToggleLanguage(); setShowMobileMenu(false); }}
-              className="min-w-[48px] min-h-[48px] flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
+              className="min-w-12 min-h-12 flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
               aria-label={t.language}
             >
               <Globe className="w-5 h-5" />
@@ -432,7 +431,7 @@ export default function MainPage({ lang }: MainPageProps) {
             </button>
             <button
               onClick={() => { toggleTheme(); setShowMobileMenu(false); }}
-              className="min-w-[48px] min-h-[48px] flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
+              className="min-w-12 min-h-12 flex flex-col items-center justify-center gap-1 rounded-lg hover:bg-muted transition-colors"
               aria-label={t.theme}
             >
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -441,8 +440,6 @@ export default function MainPage({ lang }: MainPageProps) {
           </div>
         </div>
       )}
-
-      <BrowserWarning />
 
       <main className="flex-1 min-h-0 overflow-hidden">
         {viewMode === 'edit' && (
