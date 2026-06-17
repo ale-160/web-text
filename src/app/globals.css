@@ -226,45 +226,139 @@
   color: #8b949e !important;
 }
 
-/* Code syntax highlighting contrast fixes (WCAG 4.5:1 minimum) */
-/* Light theme overrides for highlight.js github.css */
+/* highlight.js 预览区代码高亮对比度修复 (WCAG 4.5:1 minimum)
+ * 覆盖 cdnjs.cloudflare.com 的 github.min.css / github-dark.min.css */
+
+/* Light theme: 强制提升白底下所有代码高亮 token 的对比度 */
+.hljs {
+  color: #1f2937 !important;
+}
+
 .hljs-comment,
 .hljs-quote {
   color: #5c6370 !important;
 }
 
 .hljs-keyword,
-.hljs-selector-tag {
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-section,
+.hljs-doctag,
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-built_in,
+.hljs-attr {
   color: #a626a4 !important;
 }
 
 .hljs-string,
-.hljs-addition {
-  color: #50a14f !important;
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta-string,
+.hljs-regexp {
+  color: #2f7e2f !important;
 }
 
 .hljs-number,
-.hljs-literal {
+.hljs-built_in {
   color: #986801 !important;
 }
 
-/* Dark theme overrides for highlight.js github-dark.css */
+.hljs-title,
+.hljs-function,
+.hljs-function .hljs-title {
+  color: #7c3aed !important;
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params,
+.hljs-name,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: #b5651d !important;
+}
+
+.hljs-subst {
+  color: #1f2937 !important;
+}
+
+.hljs-tag,
+.hljs-bullet,
+.hljs-deletion,
+.hljs-formula {
+  color: #986801 !important;
+}
+
+.hljs-meta,
+.hljs-meta .hljs-keyword,
+.hljs-meta-string {
+  color: #5c6370 !important;
+}
+
+/* Dark theme: 深色背景下的代码高亮对比度 */
+.dark .hljs {
+  color: #e5e7eb !important;
+}
+
 .dark .hljs-comment,
 .dark .hljs-quote {
   color: #8b949e !important;
 }
 
 .dark .hljs-keyword,
-.dark .hljs-selector-tag {
+.dark .hljs-selector-tag,
+.dark .hljs-literal,
+.dark .hljs-section,
+.dark .hljs-doctag,
+.dark .hljs-type,
+.dark .hljs-class .hljs-title,
+.dark .hljs-built_in,
+.dark .hljs-attr {
   color: #d2a8ff !important;
 }
 
 .dark .hljs-string,
-.dark .hljs-addition {
+.dark .hljs-addition,
+.dark .hljs-attribute,
+.dark .hljs-meta-string,
+.dark .hljs-regexp {
   color: #7ee787 !important;
 }
 
 .dark .hljs-number,
-.dark .hljs-literal {
+.dark .hljs-built_in {
   color: #ffa657 !important;
+}
+
+.dark .hljs-title,
+.dark .hljs-function,
+.dark .hljs-function .hljs-title {
+  color: #b694f5 !important;
+}
+
+.dark .hljs-variable,
+.dark .hljs-template-variable,
+.dark .hljs-params,
+.dark .hljs-name,
+.dark .hljs-selector-attr,
+.dark .hljs-selector-pseudo {
+  color: #d29922 !important;
+}
+
+.dark .hljs-subst {
+  color: #e5e7eb !important;
+}
+
+.dark .hljs-tag,
+.dark .hljs-bullet,
+.dark .hljs-deletion,
+.dark .hljs-formula {
+  color: #ffa657 !important;
+}
+
+.dark .hljs-meta,
+.dark .hljs-meta .hljs-keyword,
+.dark .hljs-meta-string {
+  color: #8b949e !important;
 }
