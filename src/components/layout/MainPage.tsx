@@ -1,6 +1,5 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize, Heart, Menu, X, Focus, FileText, FolderUp, FolderOpen, PanelLeftClose, PanelLeftOpen, type LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -11,6 +10,8 @@ import { ExportModal } from '@/components/ui/ExportModal';
 import { RenameModal } from '@/components/ui/RenameModal';
 import { HelpModal } from '@/components/ui/HelpModal';
 import { DocSidebar } from '@/components/layout/DocSidebar';
+import { MarkdownEditor } from '@/components/MarkdownEditor';
+import { MarkdownPreview } from '@/components/MarkdownPreview';
 import { getDefaultContent } from '@/data/defaultContent';
 import { getStrings } from '@/data/i18n';
 import {
@@ -27,33 +28,6 @@ import {
   importBackup,
   renameHistoryEntry,
 } from '@/utils/storage';
-
-// 懒加载编辑器和预览组件，减少首屏 JS 体积
-const MarkdownEditor = dynamic(
-  () => import('@/components/MarkdownEditor').then(mod => ({ default: mod.MarkdownEditor })),
-  { ssr: false, loading: () => <EditorSkeleton /> }
-);
-
-const MarkdownPreview = dynamic(
-  () => import('@/components/MarkdownPreview').then(mod => ({ default: mod.MarkdownPreview })),
-  { ssr: false, loading: () => <PreviewSkeleton /> }
-);
-
-function EditorSkeleton() {
-  return (
-    <div className="h-full w-full flex items-center justify-center bg-background">
-      <div className="animate-pulse text-muted-foreground text-sm">Loading editor...</div>
-    </div>
-  );
-}
-
-function PreviewSkeleton() {
-  return (
-    <div className="h-full w-full flex items-center justify-center bg-[#fdf6e3] dark:bg-gray-950">
-      <div className="animate-pulse text-muted-foreground text-sm">Loading preview...</div>
-    </div>
-  );
-}
 
 type ViewMode = 'edit' | 'split' | 'preview';
 
