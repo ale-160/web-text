@@ -4,9 +4,9 @@
 
 一个简洁优雅的在线 Markdown 编辑器，所有数据保存在浏览器本地，无需担心隐私问题。
 
-在线体验：[https://web-text.ale160.com/](https://web-text.ale160.com/)
+在线体验：[https://web-text.ale160.com/zh/](https://web-text.ale160.com/)
 
-个人主站：[http://ale160.com/](http://ale160.com/)
+个人主站：[http://ale160.com/zh/](http://ale160.com/)
 
 ## 功能特性
 
