@@ -1,0 +1,26 @@
+name: Feature Request
+description: 建议一个新功能
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 解决了什么问题
+      description: 这个功能解决你的什么痛点？
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: 期望的方案
+      description: 你希望它怎么工作？
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: 范围确认
+      options:
+        - label: 我理解本项目是纯本地存储，不引入后端服务
+          required: true

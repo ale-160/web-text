@@ -51,6 +51,27 @@ export const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
               <h2 className="text-xl font-semibold mb-4">
                 {language === 'zh' ? '语法示例' : 'Syntax Examples'}
               </h2>
+
+              {/* 键盘快捷键 */}
+              <div className="border border-border rounded-lg p-4 bg-card">
+                <h3 className="text-lg font-semibold mb-3">{t.helpKeyboardShortcuts}</h3>
+                <div className="space-y-2 text-sm">
+                  {[
+                    { label: t.shortcutViewEdit, keys: 'Ctrl/⌘ + 1' },
+                    { label: t.shortcutViewSplit, keys: 'Ctrl/⌘ + 2' },
+                    { label: t.shortcutViewPreview, keys: 'Ctrl/⌘ + 3' },
+                    { label: t.shortcutFullscreen, keys: 'Ctrl/⌘ + Shift + F' },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center justify-between gap-4">
+                      <span className="text-muted-foreground">{item.label}</span>
+                      <kbd className="px-2 py-0.5 rounded-md bg-muted border border-border font-mono text-xs shrink-0">
+                        {item.keys}
+                      </kbd>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {examples.map((example) => (
                 <div
                   key={example.id}

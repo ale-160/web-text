@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 
 interface MarkdownPreviewProps {
   content: string;
@@ -213,7 +214,7 @@ export function MarkdownPreview({ content, theme }: MarkdownPreviewProps) {
         `}</style>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw, rehypeHighlight]}
+          rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight]}
         >
           {content}
         </ReactMarkdown>
