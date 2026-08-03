@@ -36,9 +36,9 @@ export const METADATA_ZH = {
     type: "website",
     images: [
       {
-        url: "https://ale160.com/og-image.png",
-        width: 1200,
-        height: 630,
+        url: "https://web-text.ale160.com/og-image.png",
+        width: 1024,
+        height: 576,
         alt: "web-text 预览图"
       }
     ]
@@ -47,14 +47,15 @@ export const METADATA_ZH = {
     card: "summary_large_image",
     title: "web-text · 美观的在线 Markdown 编辑器",
     description: "简洁优雅的在线 Markdown 编辑器，支持实时预览、代码高亮、自动保存、暗色模式和多语言。100% 纯前端。",
-    images: ["https://ale160.com/og-image.png"],
+    images: ["https://web-text.ale160.com/og-image.png"],
     creator: "@ale160"
   },
   alternates: {
     canonical: "https://web-text.ale160.com/zh/",
     languages: {
       "en": "https://web-text.ale160.com/",
-      "zh-CN": "https://web-text.ale160.com/zh/"
+      "zh-CN": "https://web-text.ale160.com/zh/",
+      "x-default": "https://web-text.ale160.com/"
     }
   }
 };
@@ -95,9 +96,9 @@ export const METADATA_EN = {
     type: "website",
     images: [
       {
-        url: "https://ale160.com/og-image.png",
-        width: 1200,
-        height: 630,
+        url: "https://web-text.ale160.com/og-image.png",
+        width: 1024,
+        height: 576,
         alt: "web-text Preview"
       }
     ]
@@ -106,14 +107,15 @@ export const METADATA_EN = {
     card: "summary_large_image",
     title: "web-text · Beautiful Online Markdown Editor",
     description: "A beautiful, privacy-focused online Markdown editor with real-time preview, code highlighting, auto-save, dark mode, and bilingual support. 100% client-side.",
-    images: ["https://ale160.com/og-image.png"],
+    images: ["https://web-text.ale160.com/og-image.png"],
     creator: "@ale160"
   },
   alternates: {
     canonical: "https://web-text.ale160.com/",
     languages: {
       "en": "https://web-text.ale160.com/",
-      "zh-CN": "https://web-text.ale160.com/zh/"
+      "zh-CN": "https://web-text.ale160.com/zh/",
+      "x-default": "https://web-text.ale160.com/"
     }
   }
 };
@@ -129,7 +131,7 @@ export function getMetadata(lang: string = "en"): Metadata {
     creator: metadata.creator,
     publisher: metadata.publisher,
     icons: {
-      icon: "https://ale160.com/favicon.png",
+      icon: "/favicon.png",
     },
     formatDetection: {
       email: false,
