@@ -15,8 +15,14 @@ Personal website: [http://ale160.com/](http://ale160.com/)
 - **Syntax Highlighting** — Support for multiple programming languages
 - **Auto-save** — Content automatically saved to browser local storage
 - **History** — Auto-saves last 50 versions, restore anytime
+- **Multiple Documents** — Manage multiple documents in the sidebar with search, rename, and delete
+- **One-click Backup** — Export all data as a JSON file, restore anytime
+- **Drag & Drop Import** — Drop `.md` files to create new documents
 - **Dark Mode** — Toggle light and dark themes
-- **Export** — Export as `.md` file or copy to clipboard
+- **Export** — Export as `.md`, `.html` file or copy to clipboard
+- **Focus Mode** — Distraction-free writing experience
+- **Word Count** — Real-time word and character count
+- **Keyboard Shortcuts** — `Ctrl/⌘+1/2/3` switch views, `Ctrl/⌘+Shift+F` fullscreen
 - **Multi-language** — Supports Chinese and English interfaces
 - **Fullscreen** — Immersive editing experience
 

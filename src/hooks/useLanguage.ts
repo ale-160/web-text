@@ -5,7 +5,7 @@ import {getStrings, Language} from '@/data/i18n';
 
 function getBrowserLanguage(): Language {
   if (typeof window !== 'undefined') {
-    const browserLang = navigator.language || (navigator as any).userLanguage;
+    const browserLang = navigator.language || (navigator as Navigator & { userLanguage?: string }).userLanguage;
     if (browserLang && browserLang.startsWith('zh')) {
       return 'zh';
     }
