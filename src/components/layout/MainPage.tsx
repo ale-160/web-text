@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize, Heart, Menu, X, Focus, FileText, FolderUp, PanelLeftClose, PanelLeftOpen, type LucideIcon } from 'lucide-react';
+import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize, Heart, Menu, X, Focus, FileText, FolderUp, FolderOpen, PanelLeftClose, PanelLeftOpen, type LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
@@ -156,6 +156,10 @@ export default function MainPage({ lang }: MainPageProps) {
   const [dragActive, setDragActive] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [renameTarget, setRenameTarget] = useState<Doc | HistoryEntry | null>(null);
+  // 本地文件句柄（File System Access API）：docId → FileSystemFileHandle
+  const fileHandlesRef = useRef<Map<string, FileSystemFileHandle>>(new Map());
+  const [localFileIds, setLocalFileIds] = useState<ReadonlySet<string>>(new Set());
+  const [fsaSupported, setFsaSupported] = useState(false);
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const contentRef = useRef('');
   const currentDocRef = useRef<Doc | null>(null);
@@ -220,6 +224,13 @@ export default function MainPage({ lang }: MainPageProps) {
     }
   }, [langMounted, themeMounted]);
 
+  // File System Access API 支持检测（仅支持浏览器显示按钮）
+  useEffect(() => {
+    setFsaSupported(
+      typeof window !== 'undefined' && 'showOpenFilePicker' in window
+    );
+  }, []);
+
   const toggleSidebar = useCallback(() => {
     setSidebarCollapsed(prev => {
       const next = !prev;
@@ -244,6 +255,23 @@ export default function MainPage({ lang }: MainPageProps) {
     const updatedAt = Date.now();
     await saveDoc({ ...doc, content: newContent, updatedAt });
     setDocs(prev => prev.map(d => (d.id === doc.id ? { ...d, content: newContent, updatedAt } : d)));
+    // 若该文档关联了本地文件，同步写回
+    const handle = fileHandlesRef.current.get(doc.id);
+    if (handle) {
+      try {
+        const writable = await handle.createWritable();
+        await writable.write(newContent);
+        await writable.close();
+      } catch {
+        fileHandlesRef.current.delete(doc.id);
+        setLocalFileIds(prev => {
+          const next = new Set(prev);
+          next.delete(doc.id);
+          return next;
+        });
+        toast.error(t.saveToFileFailed);
+      }
+    }
     const entry: HistoryEntry = {
       id: uid(),
       docId: doc.id,
@@ -256,7 +284,7 @@ export default function MainPage({ lang }: MainPageProps) {
       void saveHistory(doc.id, updated);
       return updated;
     });
-  }, []);
+  }, [t.saveToFileFailed]);
 
   const handleContentChange = useCallback(
     (newContent: string) => {
@@ -487,6 +515,57 @@ export default function MainPage({ lang }: MainPageProps) {
     [flushSave, t]
   );
 
+  // 打开本地文件（File System Access API）：建文档并关联文件句柄，编辑自动写回
+  const handleOpenLocalFile = useCallback(async () => {
+    if (typeof window === 'undefined' || !('showOpenFilePicker' in window)) {
+      toast.error(t.openLocalFile);
+      return;
+    }
+    try {
+      const picker = window as Window & {
+        showOpenFilePicker: (options?: {
+          types?: { description: string; accept: Record<string, string[]> }[];
+          multiple?: boolean;
+        }) => Promise<FileSystemFileHandle[]>;
+      };
+      const [handle] = await picker.showOpenFilePicker({
+        types: [
+          {
+            description: 'Markdown',
+            accept: { 'text/markdown': ['.md', '.markdown', '.txt'] },
+          },
+        ],
+        multiple: false,
+      });
+      const file = await handle.getFile();
+      const text = await file.text();
+      await flushSave();
+      const now = Date.now();
+      const doc: Doc = {
+        id: uid(),
+        name: file.name.replace(/\.(md|markdown|txt)$/i, ''),
+        content: text,
+        createdAt: now,
+        updatedAt: now,
+      };
+      await saveDoc(doc);
+      fileHandlesRef.current.set(doc.id, handle);
+      setLocalFileIds(prev => new Set(prev).add(doc.id));
+      currentDocRef.current = doc;
+      contentRef.current = text;
+      setDocs(prev => [doc, ...prev]);
+      setCurrentDocId(doc.id);
+      setContent(text);
+      setHistory([]);
+      toast.success(`${t.fileOpened}: ${doc.name}`);
+    } catch (err) {
+      // 用户取消选择（AbortError）不做提示
+      if ((err as Error).name !== 'AbortError') {
+        console.error('Open local file failed:', err);
+      }
+    }
+  }, [flushSave, t]);
+
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(content);
@@ -570,7 +649,7 @@ export default function MainPage({ lang }: MainPageProps) {
     };
   }, []);
 
-  // 键盘快捷键：Ctrl/Cmd+1/2/3 切换视图，Ctrl/Cmd+Shift+F 全屏
+  // 键盘快捷键：Ctrl/Cmd+1/2/3 切换视图，Ctrl/Cmd+Shift+F 全屏，Ctrl/Cmd+S 立即保存
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!(e.ctrlKey || e.metaKey)) return;
@@ -578,6 +657,9 @@ export default function MainPage({ lang }: MainPageProps) {
       if (e.shiftKey && key === 'f') {
         e.preventDefault();
         void handleToggleFullscreen();
+      } else if (key === 's' && !e.shiftKey) {
+        e.preventDefault();
+        void flushSave();
       } else if (key === '1') {
         e.preventDefault();
         setViewMode('edit');
@@ -593,7 +675,7 @@ export default function MainPage({ lang }: MainPageProps) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleToggleFullscreen]);
+  }, [handleToggleFullscreen, flushSave]);
 
   // 退出时立即保存
   useEffect(() => {
@@ -739,6 +821,16 @@ export default function MainPage({ lang }: MainPageProps) {
           <div className="flex items-center justify-end w-1/3">
             {/* 桌面端：直接显示功能按钮 */}
             <div className="hidden sm:flex items-center gap-2">
+              {fsaSupported && (
+                <button
+                  onClick={() => void handleOpenLocalFile()}
+                  className="p-2 rounded-lg hover:bg-muted transition-colors"
+                  title={t.openLocalFile}
+                  aria-label={t.openLocalFile}
+                >
+                  <FolderOpen className="w-5 h-5" />
+                </button>
+              )}
               <button
                 onClick={() => setFocusMode(true)}
                 className="p-2 rounded-lg hover:bg-muted transition-colors"
@@ -885,6 +977,7 @@ export default function MainPage({ lang }: MainPageProps) {
             onNew={handleNewDoc}
             onRename={handleRename}
             onDelete={handleDeleteDoc}
+            localFileIds={localFileIds}
             onImport={() => {
               const input = document.createElement('input');
               input.type = 'file';

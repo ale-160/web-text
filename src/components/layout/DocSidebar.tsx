@@ -14,6 +14,7 @@ interface DocSidebarProps {
   onRename: (doc: Doc) => void;
   onDelete: (doc: Doc) => void;
   onImport: () => void;
+  localFileIds?: ReadonlySet<string>;
   mobileOpen: boolean;
   onClose: () => void;
 }
@@ -28,6 +29,7 @@ export function DocSidebar({
   onRename,
   onDelete,
   onImport,
+  localFileIds,
   mobileOpen,
   onClose,
 }: DocSidebarProps) {
@@ -108,7 +110,14 @@ export function DocSidebar({
               >
                 <FileText className="w-4 h-4 shrink-0 text-muted-foreground" />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm truncate">{doc.name}</div>
+                  <div className="text-sm truncate flex items-center gap-1">
+                    <span className="truncate">{doc.name}</span>
+                    {localFileIds?.has(doc.id) && (
+                      <span className="text-[10px] px-1 py-0.5 rounded bg-primary/10 text-primary shrink-0">
+                        {t.localFile}
+                      </span>
+                    )}
+                  </div>
                   <div className="text-[11px] text-muted-foreground">
                     {formatTime(doc.updatedAt)}
                   </div>

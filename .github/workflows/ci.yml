@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  # ============================================================
+  # 安全检查：防 Pages Functions 注入
+  # 本项目是纯静态导出（output: export），不应包含 functions/ 目录。
+  # 防止恶意 PR 通过 Pages Functions 窃取 Cloudflare Pages 预览部署的 secrets。
+  # ============================================================
+  security-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect Pages Functions directory
+        run: |
+          if find . -path ./node_modules -prune -o -name "functions" -type d -print | grep -q .; then
+            echo "::error::检测到 /functions/ 目录，本项目是纯静态导出（output: export），不应包含 Pages Functions。请检查是否为恶意代码注入。"
+            exit 1
+          fi
+          echo "security check passed"
+
+  # ============================================================
+  # 质量门禁：audit + lint + build
+  # 部署由 Cloudflare Pages 的 GitHub 集成自动完成（PR 预览 / 主分支生产）
+  # ============================================================
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Security audit
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+  # ============================================================
+  # PR 评论：CI 结果自动通知（仅 PR 触发）
+  # ============================================================
+  pr-comment:
+    needs: [security-check, quality]
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find existing comment
+        id: find-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '<!-- ci-status-comment -->'
+
+      - name: Post CI status
+        env:
+          QUALITY_RESULT: ${{ needs.quality.result }}
+          SEC_CHECK_RESULT: ${{ needs.security-check.result }}
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |
+            <!-- ci-status-comment -->
+            ## CI 状态
+
+            | 检查项 | 结果 |
+            | --- | --- |
+            | 安全检查 | ${{ env.SEC_CHECK_RESULT }} |
+            | 质量门禁 (audit/lint/build) | ${{ env.QUALITY_RESULT }} |
+
+            ${{ needs.quality.result == 'success' && '✅ 全部通过，可以合并' || '❌ 有检查未通过，请查看 Actions 日志' }}

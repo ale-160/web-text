@@ -102,6 +102,11 @@ export const STRINGS_ZH = {
   helpMarkdownImages: '图片',
   helpMarkdownTables: '表格',
   helpMarkdownEscaping: '转义字符',
+
+  shortcutViewEdit: '编辑模式',
+  shortcutViewSplit: '分屏模式',
+  shortcutViewPreview: '预览模式',
+  shortcutFullscreen: '全屏',
   
   editMode: '编辑',
   splitMode: '分屏',
@@ -139,6 +144,10 @@ export const STRINGS_ZH = {
   words: '字',
   focusMode: '专注模式',
   exitFocus: '退出专注',
+  openLocalFile: '打开本地文件',
+  localFile: '本地文件',
+  fileOpened: '已打开本地文件',
+  saveToFileFailed: '写入本地文件失败，已解除关联',
 
   githubRepo: 'GitHub 仓库',
   sponsor: '赞赏支持',
@@ -246,6 +255,11 @@ export const STRINGS_EN = {
   helpMarkdownImages: 'Images',
   helpMarkdownTables: 'Tables',
   helpMarkdownEscaping: 'Escaping Characters',
+
+  shortcutViewEdit: 'Edit mode',
+  shortcutViewSplit: 'Split mode',
+  shortcutViewPreview: 'Preview mode',
+  shortcutFullscreen: 'Fullscreen',
   
   editMode: 'Edit',
   splitMode: 'Split',
@@ -283,6 +297,10 @@ export const STRINGS_EN = {
   words: 'words',
   focusMode: 'Focus Mode',
   exitFocus: 'Exit Focus',
+  openLocalFile: 'Open Local File',
+  localFile: 'Local file',
+  fileOpened: 'Local file opened',
+  saveToFileFailed: 'Failed to write to local file, link removed',
 
   githubRepo: 'GitHub Repo',
   sponsor: 'Sponsor',

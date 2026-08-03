@@ -1,7 +1,6 @@
 {
   "name": "web-text",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.1.1",
   "description": "A modern Markdown editor built with Next.js and React.",
   "keywords": [
     "markdown",
