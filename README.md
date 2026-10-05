@@ -1,3 +1,5 @@
+> **⚠️ 本项目已停止维护**：web-text 已作为应用融合进 [Ale OS](https://github.com/ale-160/os-open)（https://os.ale160.com/text/ ）。本站将服务至 **2026-11-03**，之后下线；文档数据可在 https://os.ale160.com/migrate 一键迁移。
+
 # web-text
 
 [English](README_EN.md) | 中文
