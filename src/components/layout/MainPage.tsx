@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize, Heart, Menu, X, Focus, FileText, FolderUp, FolderOpen, PanelLeftClose, PanelLeftOpen, ImagePlus, type LucideIcon } from 'lucide-react';
+import { Moon, Sun, Download, Copy, History, HelpCircle, Globe, Split, Edit, Eye, Maximize, Minimize, Heart, Menu, X, Focus, FileText, FolderUp, FolderOpen, PanelLeftClose, PanelLeftOpen, type LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
@@ -14,7 +14,6 @@ import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { MarkdownPreview } from '@/components/MarkdownPreview';
 import { getDefaultContent } from '@/data/defaultContent';
 import { getStrings } from '@/data/i18n';
-import { GalleryPickerModal } from '@/components/ui/GalleryPickerModal';
 import {
   Doc,
   HistoryEntry,
@@ -114,43 +113,11 @@ export default function MainPage({ lang }: MainPageProps) {
 
   const { t, toggleLanguage, isMounted: langMounted } = useLanguage(lang);
   const { theme, toggleTheme, isMounted: themeMounted } = useTheme();
-  // Ale OS 迁移公告（默认隐藏，挂载后读取，避免 SSR 闪烁）
-  const [migrationNoticeDismissed, setMigrationNoticeDismissed] = useState(true);
-  useEffect(() => {
-    setMigrationNoticeDismissed(localStorage.getItem('ale-migration-notice-dismissed') === '1');
-  }, []);
-  const dismissMigrationNotice = useCallback(() => {
-    setMigrationNoticeDismissed(true);
-    try { localStorage.setItem('ale-migration-notice-dismissed', '1'); } catch {}
-  }, []);
-  const migrationNotice = !migrationNoticeDismissed && (
-    <div className="flex items-center gap-2 px-4 py-2 text-sm border-b border-border bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
-      <span className="flex-1 min-w-0 truncate">
-        📦 web-text 已全面升级为 Ale OS——你的文档与历史版本可一键迁移到新家
-      </span>
-      <a
-        href="https://os.ale160.com/migrate"
-        target="_blank"
-        rel="noreferrer"
-        className="shrink-0 underline underline-offset-2 hover:opacity-80 font-medium"
-      >
-        立即迁移 →
-      </a>
-      <button
-        onClick={dismissMigrationNotice}
-        aria-label="关闭公告"
-        className="shrink-0 w-6 h-6 rounded hover:bg-amber-100 dark:hover:bg-amber-900/40 flex items-center justify-center"
-      >
-        ✕
-      </button>
-    </div>
-  );
   const [content, setContent] = useState('');
   const [docs, setDocs] = useState<Doc[]>([]);
   const [currentDocId, setCurrentDocId] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [showHistory, setShowHistory] = useState(false);
-  const [showGalleryPicker, setShowGalleryPicker] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [showRename, setShowRename] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -260,13 +227,7 @@ export default function MainPage({ lang }: MainPageProps) {
     if (!doc) return;
     const newContent = contentRef.current;
     const updatedAt = Date.now();
-    try {
-      await saveDoc({ ...doc, content: newContent, updatedAt });
-    } catch {
-      // 存储配额耗尽等场景：明确告知，不让自动保存静默失败
-      toast.error(t.saveFailed);
-      return;
-    }
+    await saveDoc({ ...doc, content: newContent, updatedAt });
     setDocs(prev => prev.map(d => (d.id === doc.id ? { ...d, content: newContent, updatedAt } : d)));
     // 若该文档关联了本地文件，同步写回
     const handle = fileHandlesRef.current.get(doc.id);
@@ -313,21 +274,6 @@ export default function MainPage({ lang }: MainPageProps) {
       }, 1500);
     },
     [currentDocId, flushSave]
-  );
-
-  // ===== Ale OS 系统资产：从系统图库 / 系统剪贴板插入图片到当前文档 =====
-  const handleInsertFromGallery = useCallback(
-    (dataUrl: string, name: string) => {
-      const safeName = name.replace(/[[\]]/g, '');
-      const markdownImage = `![${safeName}](${dataUrl})`;
-      const next = contentRef.current
-        ? `${contentRef.current}\n\n${markdownImage}\n`
-        : `${markdownImage}\n`;
-      handleContentChange(next);
-      setShowGalleryPicker(false);
-      toast.success(t.imageInserted);
-    },
-    [handleContentChange, t.imageInserted]
   );
 
   // 切换文档
@@ -775,7 +721,6 @@ export default function MainPage({ lang }: MainPageProps) {
     <div className="flex flex-col h-screen bg-background text-foreground">
       {focusMode ? (
         // 专注模式：极简顶栏（文档名 + 字数统计 + 视图/全屏 + 退出）
-        <>
         <header className="flex items-center px-4 py-2 border-b border-border bg-card/50 backdrop-blur-sm">
           <div className="flex items-center gap-3 flex-1 sm:w-1/3 min-w-0">
             <span className="text-sm font-medium truncate">{currentDoc?.name ?? t.untitled}</span>
@@ -802,10 +747,7 @@ export default function MainPage({ lang }: MainPageProps) {
             </button>
           </div>
         </header>
-        {migrationNotice}
-        </>
       ) : (
-        <>
         <header className="flex items-center px-3 py-2 sm:px-6 sm:py-4 border-b border-border bg-card/50 backdrop-blur-sm">
           {/* 左侧：Logo + 文档列表 + 帮助 */}
           <div className="flex items-center gap-2 sm:gap-4 flex-1 sm:w-1/3">
@@ -880,14 +822,6 @@ export default function MainPage({ lang }: MainPageProps) {
                 <History className="w-5 h-5" />
               </button>
               <button
-                onClick={() => setShowGalleryPicker(true)}
-                className="p-2 rounded-lg hover:bg-muted transition-colors"
-                title={t.insertImage}
-                aria-label={t.insertImage}
-              >
-                <ImagePlus className="w-5 h-5" />
-              </button>
-              <button
                 onClick={handleCopy}
                 className="p-2 rounded-lg hover:bg-muted transition-colors"
                 title={t.copy}
@@ -931,8 +865,6 @@ export default function MainPage({ lang }: MainPageProps) {
             </button>
           </div>
         </header>
-        {migrationNotice}
-        </>
       )}
 
       {/* 移动端下拉菜单 */}
@@ -1050,11 +982,6 @@ export default function MainPage({ lang }: MainPageProps) {
         )}
       </div>
 
-      <GalleryPickerModal
-        isOpen={showGalleryPicker}
-        onClose={() => setShowGalleryPicker(false)}
-        onInsert={handleInsertFromGallery}
-      />
       <HistoryModal
         isOpen={showHistory}
         onClose={() => setShowHistory(false)}
