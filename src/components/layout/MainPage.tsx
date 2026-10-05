@@ -113,6 +113,15 @@ export default function MainPage({ lang }: MainPageProps) {
 
   const { t, toggleLanguage, isMounted: langMounted } = useLanguage(lang);
   const { theme, toggleTheme, isMounted: themeMounted } = useTheme();
+  // Ale OS 迁移公告（默认隐藏，挂载后读取，避免 SSR 闪烁）
+  const [migrationNoticeDismissed, setMigrationNoticeDismissed] = useState(true);
+  useEffect(() => {
+    setMigrationNoticeDismissed(localStorage.getItem('ale-migration-notice-dismissed') === '1');
+  }, []);
+  const dismissMigrationNotice = useCallback(() => {
+    setMigrationNoticeDismissed(true);
+    try { localStorage.setItem('ale-migration-notice-dismissed', '1'); } catch {}
+  }, []);
   const [content, setContent] = useState('');
   const [docs, setDocs] = useState<Doc[]>([]);
   const [currentDocId, setCurrentDocId] = useState<string | null>(null);
@@ -747,6 +756,29 @@ export default function MainPage({ lang }: MainPageProps) {
             </button>
           </div>
         </header>
+      {/* Ale OS 迁移公告 */}
+      {!migrationNoticeDismissed && (
+        <div className="flex items-center gap-2 px-4 py-2 text-sm border-b border-border bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
+          <span className="flex-1 min-w-0 truncate">
+            📦 web-text 已全面升级为 Ale OS——你的文档与历史版本可一键迁移到新家
+          </span>
+          <a
+            href="https://os.ale160.com/migrate"
+            target="_blank"
+            rel="noreferrer"
+            className="shrink-0 underline underline-offset-2 hover:opacity-80 font-medium"
+          >
+            立即迁移 →
+          </a>
+          <button
+            onClick={dismissMigrationNotice}
+            aria-label="关闭公告"
+            className="shrink-0 w-6 h-6 rounded hover:bg-amber-100 dark:hover:bg-amber-900/40 flex items-center justify-center"
+          >
+            ✕
+          </button>
+        </div>)}
+
       ) : (
         <header className="flex items-center px-3 py-2 sm:px-6 sm:py-4 border-b border-border bg-card/50 backdrop-blur-sm">
           {/* 左侧：Logo + 文档列表 + 帮助 */}
@@ -865,6 +897,29 @@ export default function MainPage({ lang }: MainPageProps) {
             </button>
           </div>
         </header>
+      {/* Ale OS 迁移公告 */}
+      {!migrationNoticeDismissed && (
+        <div className="flex items-center gap-2 px-4 py-2 text-sm border-b border-border bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
+          <span className="flex-1 min-w-0 truncate">
+            📦 web-text 已全面升级为 Ale OS——你的文档与历史版本可一键迁移到新家
+          </span>
+          <a
+            href="https://os.ale160.com/migrate"
+            target="_blank"
+            rel="noreferrer"
+            className="shrink-0 underline underline-offset-2 hover:opacity-80 font-medium"
+          >
+            立即迁移 →
+          </a>
+          <button
+            onClick={dismissMigrationNotice}
+            aria-label="关闭公告"
+            className="shrink-0 w-6 h-6 rounded hover:bg-amber-100 dark:hover:bg-amber-900/40 flex items-center justify-center"
+          >
+            ✕
+          </button>
+        </div>)}
+
       )}
 
       {/* 移动端下拉菜单 */}

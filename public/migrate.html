@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>Ale OS 数据迁移助手</title>
+</head>
+<body style="font-family:system-ui,sans-serif;color:#666;padding:24px">
+<p>Ale OS 迁移助手运行中（web-text）——请在 os.ale160.com/migrate 页面操作，此页面请保持打开。</p>
+<script>
+(function () {
+  var APP = 'web-text';
+  var ALLOWED_ORIGINS = ['https://os.ale160.com', 'http://localhost:4200'];
+  var LOCAL_KEYS = ['web-text-theme', 'web-text-language', 'web-text-sidebar-collapsed'];
+  function readIdb() {
+    return new Promise(function (resolve) {
+      try {
+        var req = indexedDB.open('web-text-db', 1);
+        req.onsuccess = function () {
+          var db = req.result;
+          var out = { docs: [], history: [] };
+          var hasDocs = db.objectStoreNames.contains('docs');
+          var hasHistory = db.objectStoreNames.contains('history');
+          if (!hasDocs) { db.close(); resolve(out); return; }
+          var tx = db.transaction('docs', 'readonly');
+          var getDocs = tx.objectStore('docs').getAll();
+          getDocs.onsuccess = function () {
+            out.docs = getDocs.result || [];
+            if (!hasHistory) { resolve(out); return; }
+            var tx2 = db.transaction('history', 'readonly');
+            var getHistory = tx2.objectStore('history').getAll();
+            getHistory.onsuccess = function () { out.history = getHistory.result || []; resolve(out); };
+            getHistory.onerror = function () { resolve(out); };
+          };
+          getDocs.onerror = function () { resolve(out); };
+        };
+        req.onerror = function () { resolve({ docs: [], history: [] }); };
+      } catch (e) { resolve({ docs: [], history: [] }); }
+    });
+  }
+  window.addEventListener('message', function (event) {
+    if (ALLOWED_ORIGINS.indexOf(event.origin) === -1) return;
+    var data = event.data || {};
+    if (data.type !== 'ale-migrate-request' || !data.requestId) return;
+    var source = event.source;
+    var origin = event.origin;
+    readIdb().then(function (idb) {
+      var payload = { localStorage: {}, idb: idb };
+      LOCAL_KEYS.forEach(function (key) {
+        var value = localStorage.getItem(key);
+        if (value !== null) payload.localStorage[key] = value;
+      });
+      source.postMessage(
+        { type: 'ale-migrate-data', requestId: data.requestId, app: APP, payload: payload },
+        origin
+      );
+    });
+  });
+})();
+</script>
+</body>
+</html>
