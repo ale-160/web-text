@@ -113,6 +113,37 @@ export default function MainPage({ lang }: MainPageProps) {
 
   const { t, toggleLanguage, isMounted: langMounted } = useLanguage(lang);
   const { theme, toggleTheme, isMounted: themeMounted } = useTheme();
+  // Ale OS 迁移公告（默认隐藏，挂载后读取，避免 SSR 闪烁）
+  const [migrationNoticeDismissed, setMigrationNoticeDismissed] = useState(true);
+  useEffect(() => {
+    setMigrationNoticeDismissed(localStorage.getItem('ale-migration-notice-dismissed') === '1');
+  }, []);
+  const dismissMigrationNotice = useCallback(() => {
+    setMigrationNoticeDismissed(true);
+    try { localStorage.setItem('ale-migration-notice-dismissed', '1'); } catch {}
+  }, []);
+  const migrationNotice = !migrationNoticeDismissed && (
+    <div className="flex items-center gap-2 px-4 py-2 text-sm border-b border-border bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
+      <span className="flex-1 min-w-0 truncate">
+        📦 web-text 已全面升级为 Ale OS——你的文档与历史版本可一键迁移到新家
+      </span>
+      <a
+        href="https://os.ale160.com/migrate"
+        target="_blank"
+        rel="noreferrer"
+        className="shrink-0 underline underline-offset-2 hover:opacity-80 font-medium"
+      >
+        立即迁移 →
+      </a>
+      <button
+        onClick={dismissMigrationNotice}
+        aria-label="关闭公告"
+        className="shrink-0 w-6 h-6 rounded hover:bg-amber-100 dark:hover:bg-amber-900/40 flex items-center justify-center"
+      >
+        ✕
+      </button>
+    </div>
+  );
   const [content, setContent] = useState('');
   const [docs, setDocs] = useState<Doc[]>([]);
   const [currentDocId, setCurrentDocId] = useState<string | null>(null);
@@ -721,6 +752,7 @@ export default function MainPage({ lang }: MainPageProps) {
     <div className="flex flex-col h-screen bg-background text-foreground">
       {focusMode ? (
         // 专注模式：极简顶栏（文档名 + 字数统计 + 视图/全屏 + 退出）
+        <>
         <header className="flex items-center px-4 py-2 border-b border-border bg-card/50 backdrop-blur-sm">
           <div className="flex items-center gap-3 flex-1 sm:w-1/3 min-w-0">
             <span className="text-sm font-medium truncate">{currentDoc?.name ?? t.untitled}</span>
@@ -747,7 +779,10 @@ export default function MainPage({ lang }: MainPageProps) {
             </button>
           </div>
         </header>
+        {migrationNotice}
+        </>
       ) : (
+        <>
         <header className="flex items-center px-3 py-2 sm:px-6 sm:py-4 border-b border-border bg-card/50 backdrop-blur-sm">
           {/* 左侧：Logo + 文档列表 + 帮助 */}
           <div className="flex items-center gap-2 sm:gap-4 flex-1 sm:w-1/3">
@@ -865,6 +900,8 @@ export default function MainPage({ lang }: MainPageProps) {
             </button>
           </div>
         </header>
+        {migrationNotice}
+        </>
       )}
 
       {/* 移动端下拉菜单 */}
